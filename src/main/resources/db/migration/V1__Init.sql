@@ -60,6 +60,19 @@ CREATE TABLE IF NOT EXISTS user_reviews
     FOREIGN KEY (seller_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS chat_messages
+(
+    id             BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    sender_id      BIGINT,
+    receiver_id    BIGINT,
+    text   TEXT NOT NULL,
+    is_read        BOOLEAN   DEFAULT FALSE,
+    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS categories
 (
     name        VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -105,14 +118,3 @@ CREATE TABLE IF NOT EXISTS saved_ads
     FOREIGN KEY (ad_id) REFERENCES ads (id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS chat_messages
-(
-    id             BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    sender_id      BIGINT,
-    receiver_id    BIGINT,
-    message_text   TEXT,
-    send_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_read        BOOLEAN   DEFAULT FALSE,
-    FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE,
-    FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE
-);
