@@ -57,6 +57,6 @@ public class UserEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_images", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "image_url")
+    @Column(name = "image_url", nullable = false)
     private List<String> imageUrls;
 }

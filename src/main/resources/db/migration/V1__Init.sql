@@ -47,11 +47,11 @@ CREATE TABLE IF NOT EXISTS user_images
 
 CREATE TABLE IF NOT EXISTS user_reviews
 (
-    id          BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    rating      INT    NOT NULL,
-    reviewer_id BIGINT,
-    seller_id   BIGINT,
-    comment     TEXT NOT NULL,
+    id           BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    rating       INT    NOT NULL,
+    reviewer_id  BIGINT,
+    seller_id    BIGINT,
+    comment      TEXT   NOT NULL,
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY idx_review (reviewer_id, seller_id, comment(255)),
@@ -62,11 +62,11 @@ CREATE TABLE IF NOT EXISTS user_reviews
 
 CREATE TABLE IF NOT EXISTS chat_messages
 (
-    id             BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    sender_id      BIGINT,
-    receiver_id    BIGINT,
-    text   TEXT NOT NULL,
-    is_read        BOOLEAN   DEFAULT FALSE,
+    id           BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    sender_id    BIGINT,
+    receiver_id  BIGINT,
+    text         TEXT   NOT NULL,
+    is_read      BOOLEAN   DEFAULT FALSE,
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE,
@@ -89,14 +89,14 @@ CREATE TABLE IF NOT EXISTS ads
     currency       VARCHAR(3)     NOT NULL,
     description    TEXT,
     ad_status      ENUM ('ACTIVE', 'INACTIVE', 'SOLD') DEFAULT 'ACTIVE',
-    item_condition ENUM ('NONE', 'NEW', 'USED')        DEFAULT 'NONE',
-    user_id        BIGINT,
+    item_condition ENUM ('NEW', 'NONE', 'USED')        DEFAULT 'NEW',
+    seller_id      BIGINT,
     views_count    INT                                 DEFAULT 0,
     date_created   TIMESTAMP                           DEFAULT CURRENT_TIMESTAMP,
     date_updated   TIMESTAMP                           DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (title, category_name),
     FOREIGN KEY (category_name) REFERENCES categories (name) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+    FOREIGN KEY (seller_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS ad_images
