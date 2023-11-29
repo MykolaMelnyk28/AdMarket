@@ -1,9 +1,15 @@
 package com.api.admarket.api.v1.entity.user;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "user_info")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserInfo {
 
     @Id
@@ -29,7 +35,7 @@ public class UserInfo {
 
     private String state;
 
+    @Column(columnDefinition = "TEXT")
     private String additionalInfo;
-
 
 }

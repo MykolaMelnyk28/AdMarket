@@ -45,6 +45,21 @@ CREATE TABLE IF NOT EXISTS user_images
     FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
+CREATE TABLE IF NOT EXISTS user_reviews
+(
+    id          BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    rating      INT    NOT NULL,
+    reviewer_id BIGINT,
+    seller_id   BIGINT,
+    comment     TEXT NOT NULL,
+    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY idx_review (reviewer_id, seller_id, comment(255)),
+    CHECK (rating >= 1 AND rating <= 5),
+    FOREIGN KEY (reviewer_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (seller_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS categories
 (
     name        VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -88,20 +103,6 @@ CREATE TABLE IF NOT EXISTS saved_ads
     UNIQUE (ad_id, user_id),
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (ad_id) REFERENCES ads (id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS user_reviews
-(
-    id          BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    rating      INT    NOT NULL,
-    reviewer_id BIGINT,
-    seller_id   BIGINT,
-    comment     TEXT,
-    review_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY idx_review (reviewer_id, seller_id, comment(255)),
-    CHECK (rating >= 1 AND rating <= 5),
-    FOREIGN KEY (reviewer_id) REFERENCES users (id) ON DELETE CASCADE,
-    FOREIGN KEY (seller_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS chat_messages
