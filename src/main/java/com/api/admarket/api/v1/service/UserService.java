@@ -22,6 +22,8 @@ public interface UserService {
     List<UserEntity> getAllByAccountStatus(AccountStatus accountStatus);
     UserEntity updateById(Long userId, UserEntity user);
     void deleteById(Long userId);
-    void uploadImage(Long userId, Image image);
+
+    String addImage(Long userId, Image image);
+    void deleteImage(Long userId, String url);
 
 }

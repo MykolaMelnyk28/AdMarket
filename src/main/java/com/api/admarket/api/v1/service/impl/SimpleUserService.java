@@ -11,12 +11,13 @@ import com.api.admarket.api.v1.service.ImageService;
 import com.api.admarket.api.v1.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-
+//@Service
 public class SimpleUserService implements UserService {
 
     private final UserRepository userRepository;
@@ -121,9 +122,16 @@ public class SimpleUserService implements UserService {
     }
 
     @Override
-    public void uploadImage(Long id, Image image) {
+    public String addImage(Long userId, Image image) {
         String url = imageService.upload(image);
-        userRepository.addImage(id, url);
+        userRepository.addImage(userId, url);
+        return url;
+    }
+
+    @Override
+    public void deleteImage(Long userId, String url) {
+        imageService.unload(url);
+        userRepository.deleteImage(userId, url);
     }
 
     private UserEntity getByIdOrThrow(Long id)
