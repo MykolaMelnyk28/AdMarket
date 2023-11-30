@@ -90,13 +90,13 @@ CREATE TABLE IF NOT EXISTS ads
     description    TEXT,
     ad_status      ENUM ('ACTIVE', 'INACTIVE', 'SOLD') DEFAULT 'ACTIVE',
     item_condition ENUM ('NEW', 'NONE', 'USED')        DEFAULT 'NEW',
-    seller_id      BIGINT,
+    #seller_id      BIGINT,
     views_count    INT                                 DEFAULT 0,
     date_created   TIMESTAMP                           DEFAULT CURRENT_TIMESTAMP,
     date_updated   TIMESTAMP                           DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (title, category_name),
-    FOREIGN KEY (category_name) REFERENCES categories (name) ON DELETE CASCADE,
-    FOREIGN KEY (seller_id) REFERENCES users (id) ON DELETE CASCADE
+    FOREIGN KEY (category_name) REFERENCES categories (name) ON DELETE CASCADE
+    #FOREIGN KEY (seller_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS ad_images
@@ -105,6 +105,15 @@ CREATE TABLE IF NOT EXISTS ad_images
     image_url VARCHAR(255) NOT NULL,
     PRIMARY KEY (ad_id, image_url),
     FOREIGN KEY (ad_id) REFERENCES ads (id)
+);
+
+CREATE TABLE IF NOT EXISTS users_ads
+(
+    user_id BIGINT NOT NULL,
+    ad_id BIGINT NOT NULL,
+    PRIMARY KEY (user_id, ad_id),
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION,
+    FOREIGN KEY (ad_id) REFERENCES ads (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS saved_ads

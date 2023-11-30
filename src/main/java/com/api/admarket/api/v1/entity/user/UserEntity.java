@@ -62,6 +62,9 @@ public class UserEntity {
     @Column(name = "image_url", nullable = false)
     private List<String> imageUrls;
 
+    @OneToMany(mappedBy = "user")
+    private List<AdEntity> ads;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<SavedAd> savedAds;
 }

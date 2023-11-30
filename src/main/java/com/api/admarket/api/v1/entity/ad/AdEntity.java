@@ -52,8 +52,12 @@ public class AdEntity {
     private ItemCondition itemCondition = ItemCondition.NEW;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "seller_id")
-    private UserEntity seller;
+    @JoinTable(
+            name = "users_ads",
+            joinColumns = @JoinColumn(name = "ad_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private UserEntity user;
 
     @Column(nullable = false)
     private int viewsCount = 0;
