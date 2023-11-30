@@ -19,7 +19,7 @@ public interface UserService {
     Optional<UserEntity> getByPhoneNumber(String phoneNumber);
     Optional<UserEntity> getByUsernameOrEmail(String usernameOrEmail);
     Page<UserEntity> getAll(Pageable pageable);
-    List<UserEntity> getAllByAccountStatus(AccountStatus accountStatus);
+    Page<UserEntity> getAllByAccountStatus(AccountStatus accountStatus, Pageable pageable);
     UserEntity updateById(Long userId, UserEntity user);
     void deleteById(Long userId);
 

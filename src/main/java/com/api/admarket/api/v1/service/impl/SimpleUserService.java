@@ -11,7 +11,6 @@ import com.api.admarket.api.v1.service.ImageService;
 import com.api.admarket.api.v1.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
@@ -79,8 +78,8 @@ public class SimpleUserService implements UserService {
     }
 
     @Override
-    public List<UserEntity> getAllByAccountStatus(AccountStatus accountStatus) {
-        return userRepository.findAllByAccountStatus(accountStatus);
+    public Page<UserEntity> getAllByAccountStatus(AccountStatus accountStatus, Pageable pageable) {
+        return userRepository.findAllByAccountStatus(accountStatus, pageable);
     }
 
     @Override
