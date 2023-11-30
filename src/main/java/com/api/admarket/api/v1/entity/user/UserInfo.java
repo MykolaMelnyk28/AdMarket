@@ -3,10 +3,12 @@ package com.api.admarket.api.v1.entity.user;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "user_info")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
