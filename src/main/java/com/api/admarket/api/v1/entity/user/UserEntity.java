@@ -1,5 +1,7 @@
 package com.api.admarket.api.v1.entity.user;
 
+import com.api.admarket.api.v1.entity.ad.AdEntity;
+import com.api.admarket.api.v1.entity.ad.SavedAd;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -59,4 +61,7 @@ public class UserEntity {
     @CollectionTable(name = "user_images", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "image_url", nullable = false)
     private List<String> imageUrls;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<SavedAd> savedAds;
 }
