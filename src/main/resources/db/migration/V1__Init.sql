@@ -60,17 +60,35 @@ CREATE TABLE IF NOT EXISTS user_reviews
     FOREIGN KEY (seller_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS chat_messages
+CREATE TABLE IF NOT EXISTS chats
 (
     id           BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS messages
+(
+    id           BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    chat_id      BIGINT NOT NULL,
     sender_id    BIGINT,
     receiver_id  BIGINT,
     text         TEXT   NOT NULL,
     is_read      BOOLEAN   DEFAULT FALSE,
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chat_id) REFERENCES chats (id) ON DELETE CASCADE,
     FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS chats_users
+(
+    chat_id BIGINT,
+    user_id BIGINT,
+    PRIMARY KEY (chat_id, user_id),
+    FOREIGN KEY (chat_id) REFERENCES chats (id),
+    FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
 CREATE TABLE IF NOT EXISTS categories
@@ -110,7 +128,7 @@ CREATE TABLE IF NOT EXISTS ad_images
 CREATE TABLE IF NOT EXISTS users_ads
 (
     user_id BIGINT NOT NULL,
-    ad_id BIGINT NOT NULL,
+    ad_id   BIGINT NOT NULL,
     PRIMARY KEY (user_id, ad_id),
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (ad_id) REFERENCES ads (id) ON DELETE CASCADE ON UPDATE NO ACTION
@@ -118,9 +136,9 @@ CREATE TABLE IF NOT EXISTS users_ads
 
 CREATE TABLE IF NOT EXISTS saved_ads
 (
-    id         BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    ad_id      BIGINT,
-    user_id    BIGINT,
+    id           BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    ad_id        BIGINT,
+    user_id      BIGINT,
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (ad_id, user_id),
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,

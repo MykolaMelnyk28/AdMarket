@@ -10,37 +10,35 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@Table(name = "chat_messages")
+@Table(name = "chats")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ChatMessage {
+public class Chat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(columnDefinition = "TEXT NOT NULL")
-    private String text;
-
-    @Column
-    private boolean isRead = false;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "sender_id")
-    private UserEntity sender;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "receiver_id")
-    private UserEntity receiver;
 
     @CreationTimestamp
     private LocalDateTime dateCreated;
 
     @UpdateTimestamp
     private LocalDateTime dateUpdated;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "chats_users",
+            joinColumns = @JoinColumn(name = "chat_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<UserEntity> users;
+
+    @OneToMany(mappedBy = "chat")
+    private List<Message> messages;
 
 }
