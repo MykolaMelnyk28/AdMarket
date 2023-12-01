@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS users
     date_updated    TIMESTAMP                                DEFAULT CURRENT_TIMESTAMP,
     account_status  ENUM ('NOACTIVATE', 'ACTIVE', 'BLOCKED') DEFAULT 'NOACTIVATE',
     user_info_id    BIGINT,
-    FOREIGN KEY (user_info_id) REFERENCES user_info (id)
+    FOREIGN KEY (user_info_id) REFERENCES user_info (id) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS user_roles
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS user_roles
     user_id BIGINT,
     role    ENUM ('USER', 'ADMIN') NOT NULL,
     PRIMARY KEY (user_id, role),
-    FOREIGN KEY (user_id) REFERENCES users (id)
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS user_images
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS user_images
     user_id   BIGINT,
     image_url VARCHAR(255) NOT NULL,
     PRIMARY KEY (user_id, image_url),
-    FOREIGN KEY (user_id) REFERENCES users (id)
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS user_reviews
@@ -71,15 +71,16 @@ CREATE TABLE IF NOT EXISTS messages
 (
     id           BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     chat_id      BIGINT NOT NULL,
-    sender_id    BIGINT,
-    receiver_id  BIGINT,
+    sender_id    BIGINT NOT NULL,
+    receiver_id  BIGINT NOT NULL,
     text         TEXT   NOT NULL,
     is_read      BOOLEAN   DEFAULT FALSE,
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (chat_id) REFERENCES chats (id) ON DELETE CASCADE,
-    FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE,
-    FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE
+    CHECK(sender_id <> receiver_id),
+    FOREIGN KEY (chat_id) REFERENCES chats (id) ON DELETE CASCADE ON UPDATE NO ACTION,
+    FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION ,
+    FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS chats_users
@@ -87,15 +88,15 @@ CREATE TABLE IF NOT EXISTS chats_users
     chat_id BIGINT,
     user_id BIGINT,
     PRIMARY KEY (chat_id, user_id),
-    FOREIGN KEY (chat_id) REFERENCES chats (id),
-    FOREIGN KEY (user_id) REFERENCES users (id)
+    FOREIGN KEY (chat_id) REFERENCES chats (id) ON DELETE CASCADE ON UPDATE NO ACTION,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS categories
 (
     name        VARCHAR(255) NOT NULL PRIMARY KEY,
     parent_name VARCHAR(255),
-    FOREIGN KEY (parent_name) REFERENCES categories (name) ON DELETE CASCADE
+    FOREIGN KEY (parent_name) REFERENCES categories (name) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS ads
@@ -108,13 +109,11 @@ CREATE TABLE IF NOT EXISTS ads
     description    TEXT,
     ad_status      ENUM ('ACTIVE', 'INACTIVE', 'SOLD') DEFAULT 'ACTIVE',
     item_condition ENUM ('NEW', 'NONE', 'USED')        DEFAULT 'NEW',
-    #seller_id      BIGINT,
     views_count    INT                                 DEFAULT 0,
     date_created   TIMESTAMP                           DEFAULT CURRENT_TIMESTAMP,
     date_updated   TIMESTAMP                           DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (title, category_name),
-    FOREIGN KEY (category_name) REFERENCES categories (name) ON DELETE CASCADE
-    #FOREIGN KEY (seller_id) REFERENCES users (id) ON DELETE CASCADE
+    FOREIGN KEY (category_name) REFERENCES categories (name) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS ad_images
@@ -122,7 +121,7 @@ CREATE TABLE IF NOT EXISTS ad_images
     ad_id     BIGINT,
     image_url VARCHAR(255) NOT NULL,
     PRIMARY KEY (ad_id, image_url),
-    FOREIGN KEY (ad_id) REFERENCES ads (id)
+    FOREIGN KEY (ad_id) REFERENCES ads (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS users_ads
