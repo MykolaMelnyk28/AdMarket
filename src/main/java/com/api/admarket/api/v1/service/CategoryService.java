@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface CategoryService {
     Category create(Category category, String parentName);
+    Category getRoot();
     Optional<Category> getById(String categoryName);
     List<Category> getAllByParent(String parentName, boolean subInclude);
     Category updateById(String categoryName, Category category);

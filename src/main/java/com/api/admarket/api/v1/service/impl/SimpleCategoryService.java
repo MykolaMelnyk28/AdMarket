@@ -24,8 +24,18 @@ public class SimpleCategoryService implements CategoryService {
             throw new IllegalStateException("User already exists.");
         }
         Category saved = categoryRepository.save(category);
-        categoryRepository.assignParent(saved.getName(), parentName);
+        if (saved.getParent() == null) {
+            categoryRepository.assignParent(saved.getName(),
+                    (parentName != null)
+                            ? parentName
+                            : "all");
+        }
         return saved;
+    }
+
+    @Override
+    public Category getRoot() {
+        return categoryRepository.findRoot();
     }
 
     @Override
@@ -35,11 +45,18 @@ public class SimpleCategoryService implements CategoryService {
 
     @Override
     public List<Category> getAllByParent(String parentName, boolean subInclude) {
-        return getOrThrow(parentName).getChildren();
+        List<Category> categories = getOrThrow(parentName).getChildren();
+        if (!subInclude) {
+            categories = categories.stream().peek(x -> x.setChildren(null)).toList();
+        }
+        return categories;
     }
 
     @Override
     public Category updateById(String categoryName, Category category) {
+        if (categoryName.equalsIgnoreCase("all")) {
+            throw new IllegalArgumentException("Change 'all' category");
+        }
         Category found = getById(categoryName).orElseThrow(() ->
                 new ResourceNotFoundException("Category not found"));
         found.setName(category.getName());
@@ -52,6 +69,9 @@ public class SimpleCategoryService implements CategoryService {
 
     @Override
     public void deleteById(String categoryName) {
+        if (categoryName.equalsIgnoreCase("all")) {
+            throw new IllegalArgumentException("Change 'all' category");
+        }
         categoryRepository.deleteById(categoryName);
     }
 

@@ -10,6 +10,11 @@ import org.springframework.stereotype.Repository;
 public interface CategoryRepository extends JpaRepository<Category, String> {
 
     @Query(value = """
+        SELECT * FROM categories c WHERE c.name = 'all' LIMIT 1
+        """, nativeQuery = true)
+    Category findRoot();
+
+    @Query(value = """
         UPDATE categories c
         SET c.parent_name = :categoryParentName
         WHERE c.name = :categoryName
