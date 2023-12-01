@@ -1,6 +1,10 @@
 package com.api.admarket.api.v1.entity.user;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Check;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -14,6 +18,10 @@ import java.time.LocalDateTime;
                 columnNames = {"reviewer_id", "seller_id", "comment"}
         )
 })
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserReview {
 
     @Id
