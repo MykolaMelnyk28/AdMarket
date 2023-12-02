@@ -5,8 +5,10 @@ import com.api.admarket.api.v1.entity.image.Image;
 import com.api.admarket.api.v1.exeption.ResourceNotFoundException;
 import com.api.admarket.api.v1.repository.AdRepository;
 import com.api.admarket.api.v1.service.AdService;
+import com.api.admarket.api.v1.service.CategoryService;
 import com.api.admarket.api.v1.service.ImageService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
@@ -42,13 +44,13 @@ public class SimpleAdService implements AdService {
     }
 
     @Override
-    public Page<AdEntity> getAllByCategory(String categoryName, Pageable pageable) {
-        return adRepository.findAllByCategory(categoryName, pageable);
+    public Page<AdEntity> getAllByPartialTitle(String categoryName, String title, Pageable pageable) {
+        return adRepository.findAllByTitleContains(categoryName, title, pageable);
     }
 
     @Override
-    public Page<AdEntity> getAllByPartialTitle(String categoryName, String title, Pageable pageable) {
-        return adRepository.findAllByTitleContains(categoryName, title, pageable);
+    public Page<AdEntity> getAllByUserId(Long sellerId, Pageable pageable) {
+        return adRepository.findAllByUserId(sellerId, pageable);
     }
 
     @Override

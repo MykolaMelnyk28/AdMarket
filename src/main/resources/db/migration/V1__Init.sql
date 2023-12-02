@@ -96,6 +96,7 @@ CREATE TABLE IF NOT EXISTS categories
 (
     name        VARCHAR(255) NOT NULL PRIMARY KEY,
     parent_name VARCHAR(255),
+    is_leaf     BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (parent_name) REFERENCES categories (name) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
@@ -144,3 +145,23 @@ CREATE TABLE IF NOT EXISTS saved_ads
     FOREIGN KEY (ad_id) REFERENCES ads (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+# TRIGGERS
+
+CREATE TRIGGER before_insert_ads
+BEFORE INSERT ON ads
+FOR EACH ROW
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM categories c WHERE c.name = NEW.category_name AND c.is_leaf = true) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Category is not a leaf category';
+    END IF;
+END;
+
+CREATE TRIGGER after_update_categories
+AFTER UPDATE ON categories
+FOR EACH ROW
+BEGIN
+    IF NEW.is_leaf = TRUE AND OLD.is_leaf = FALSE THEN
+        UPDATE ads SET category_name = NEW.name WHERE category_name = OLD.name;
+    END IF;
+END;

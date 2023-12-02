@@ -12,8 +12,8 @@ public interface AdService {
     AdEntity create(AdEntity ad, Long userId);
     Optional<AdEntity> getById(Long adId);
     Page<AdEntity> getAll(Pageable pageable);
-    Page<AdEntity> getAllByCategory(String categoryName, Pageable pageable);
     Page<AdEntity> getAllByPartialTitle(String categoryName, String title, Pageable pageable);
+    Page<AdEntity> getAllByUserId(Long sellerId, Pageable pageable);
     Page<AdEntity> getAllSavedAdsByUserId(Long userId, Pageable pageable);
     AdEntity updateById(Long adId, AdEntity ad);
     void deleteById(Long adId);

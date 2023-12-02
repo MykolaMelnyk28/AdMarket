@@ -10,16 +10,30 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AdRepository extends JpaRepository<AdEntity, Long> {
-    @Query(value = """
-        SELECT * FROM categories c WHERE c.name = :categoryName
-        """, nativeQuery = true)
-    Page<AdEntity> findAllByCategory(String categoryName, Pageable pageable);
 
     @Query(value = """
-            SELECT * FROM ads a
-            WHERE a.category_name = :categoryName AND a.title LIKE CONCAT('%', :title, '%')
+            WITH RECURSIVE CategoryHierarchy AS (
+                SELECT name, parent_name, is_leaf
+                FROM categories
+                WHERE name = :categoryName
+                UNION ALL
+                SELECT c.name, c.parent_name, c.is_leaf
+                FROM categories c
+                JOIN CategoryHierarchy ch ON c.parent_name = ch.name
+            )
+            SELECT a.* FROM ads a
+            JOIN CategoryHierarchy ch ON a.category_name = ch.name
+            WHERE a.title LIKE CONCAT('%', :title, '%')
             """, nativeQuery = true)
     Page<AdEntity> findAllByTitleContains(String categoryName, String title, Pageable pageable);
+
+    @Query(value = """
+        SELECT * FROM users_ads ua
+        JOIN users u ON ua.user_id = u.id
+        JOIN ads a ON ua.ad_id = a.id
+        WHERE u.id = :sellerId
+        """, nativeQuery = true)
+    Page<AdEntity> findAllByUserId(Long sellerId, Pageable pageable);
 
     @Query(value = """
             SELECT sa.ad FROM SavedAd sa WHERE sa.user.id = :userId
