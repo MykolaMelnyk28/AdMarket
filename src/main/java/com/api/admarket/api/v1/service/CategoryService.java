@@ -8,8 +8,8 @@ import java.util.Optional;
 public interface CategoryService {
     Category create(Category category, String parentName);
     Category getRoot();
-    Optional<Category> getById(String categoryName);
+    Optional<Category> getByName(String categoryName);
     List<Category> getAllByParent(String parentName, boolean subInclude);
-    Category updateById(String categoryName, Category category);
-    void deleteById(String categoryName);
+    Category updateByName(String categoryName, Category category);
+    void deleteByName(String categoryName);
 }

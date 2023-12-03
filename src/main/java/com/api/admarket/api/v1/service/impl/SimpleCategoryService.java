@@ -32,7 +32,7 @@ public class SimpleCategoryService implements CategoryService {
             parent.setLeaf(false);
             category.setParent(parent);
         }
-
+        category.setLeaf(true);
         Category saved = categoryRepository.save(category);
         return saved;
     }
@@ -43,8 +43,8 @@ public class SimpleCategoryService implements CategoryService {
     }
 
     @Override
-    public Optional<Category> getById(String categoryName) {
-        return categoryRepository.findById(categoryName);
+    public Optional<Category> getByName(String categoryName) {
+        return categoryRepository.findByName(categoryName);
     }
 
     @Override
@@ -57,11 +57,11 @@ public class SimpleCategoryService implements CategoryService {
     }
 
     @Override
-    public Category updateById(String categoryName, Category category) {
+    public Category updateByName(String categoryName, Category category) {
         throwIfImmutableCategory(categoryName);
         Category found = getOrThrow(categoryName);
         copy(category, found);
-        return found;
+        return categoryRepository.save(found);
     }
 
     private void copy(Category source, Category destination) {
@@ -69,23 +69,33 @@ public class SimpleCategoryService implements CategoryService {
             destination.setName(source.getName());
         }
         if (source.getParent() != null) {
-            destination.setParent(source.getParent());
+            Category parent = getOrThrow(source.getParent().getName());
+            parent.setLeaf(false);
+            Category dParent = destination.getParent();
+            if (dParent.getChildren() == null || dParent.getChildren().size() < 2) {
+                dParent.setLeaf(true);
+            }
+            destination.setParent(parent);
         }
     }
 
     @Override
-    public void deleteById(String categoryName) {
+    public void deleteByName(String categoryName) {
         throwIfImmutableCategory(categoryName);
+        Category parent = getOrThrow(categoryName).getParent();
+        if (parent.getChildren() == null || parent.getChildren().size() < 2) {
+            parent.setLeaf(true);
+        }
         categoryRepository.deleteByName(categoryName);
     }
 
     private Category getOrThrow(String categoryName) {
-        return getById(categoryName).orElseThrow(() ->
+        return getByName(categoryName).orElseThrow(() ->
                 new ResourceNotFoundException("Category not found"));
     }
 
     private void throwIfCategoryAlreadyExists(String category) {
-        if (getById(category).isPresent()) {
+        if (getByName(category).isPresent()) {
             throw new IllegalStateException("User already exists.");
         }
     }

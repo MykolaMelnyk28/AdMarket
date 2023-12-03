@@ -15,7 +15,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "ads", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"title", "category_name"})
+        @UniqueConstraint(columnNames = {"title", "category_id"})
 })
 @Data
 @NoArgsConstructor
@@ -31,7 +31,7 @@ public class AdEntity {
     private String title;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "category_name")
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @Column(columnDefinition = "DECIMAL(10, 2) NOT NULL")

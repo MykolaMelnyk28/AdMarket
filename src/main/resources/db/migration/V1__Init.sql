@@ -77,9 +77,9 @@ CREATE TABLE IF NOT EXISTS messages
     is_read      BOOLEAN   DEFAULT FALSE,
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CHECK(sender_id <> receiver_id),
+    CHECK (sender_id <> receiver_id),
     FOREIGN KEY (chat_id) REFERENCES chats (id) ON DELETE CASCADE ON UPDATE NO ACTION,
-    FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION ,
+    FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
@@ -94,17 +94,18 @@ CREATE TABLE IF NOT EXISTS chats_users
 
 CREATE TABLE IF NOT EXISTS categories
 (
-    name        VARCHAR(255) NOT NULL PRIMARY KEY,
-    parent_name VARCHAR(255),
-    is_leaf     BOOLEAN      NOT NULL DEFAULT TRUE,
-    FOREIGN KEY (parent_name) REFERENCES categories (name) ON DELETE CASCADE ON UPDATE NO ACTION
+    id        BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name      VARCHAR(255) NOT NULL UNIQUE,
+    parent_id BIGINT,
+    is_leaf   BOOLEAN      NOT NULL DEFAULT TRUE,
+    FOREIGN KEY (parent_id) REFERENCES categories (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS ads
 (
     id             BIGINT         NOT NULL AUTO_INCREMENT PRIMARY KEY,
     title          VARCHAR(100)   NOT NULL,
-    category_name  VARCHAR(255),
+    category_id    BIGINT,
     price          DECIMAL(10, 2) NOT NULL,
     currency       VARCHAR(3)     NOT NULL,
     description    TEXT,
@@ -113,8 +114,8 @@ CREATE TABLE IF NOT EXISTS ads
     views_count    INT                                 DEFAULT 0,
     date_created   TIMESTAMP                           DEFAULT CURRENT_TIMESTAMP,
     date_updated   TIMESTAMP                           DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (title, category_name),
-    FOREIGN KEY (category_name) REFERENCES categories (name) ON DELETE CASCADE ON UPDATE NO ACTION
+    UNIQUE (title, category_id),
+    FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS ad_images
@@ -148,10 +149,11 @@ CREATE TABLE IF NOT EXISTS saved_ads
 # TRIGGERS
 
 CREATE TRIGGER before_insert_ads
-BEFORE INSERT ON ads
-FOR EACH ROW
+    BEFORE INSERT
+    ON ads
+    FOR EACH ROW
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM categories c WHERE c.name = NEW.category_name AND c.is_leaf = true) THEN
+    IF NOT EXISTS (SELECT 1 FROM categories c WHERE c.id = NEW.id AND c.is_leaf = true) THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Category is not a leaf category';
     END IF;
