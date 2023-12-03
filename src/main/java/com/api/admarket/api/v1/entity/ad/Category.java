@@ -23,8 +23,8 @@ public class Category {
     @JoinColumn(name = "parent_name")
     private Category parent;
 
-    @Column(columnDefinition = "BOOLEAN NOT NULL DEFAULT FALSE")
-    private boolean isLeaf;
+    @Column(columnDefinition = "BOOLEAN NOT NULL DEFAULT TRUE")
+    private boolean isLeaf = true;
 
     @OneToMany(mappedBy = "parent")
     private List<Category> children;
