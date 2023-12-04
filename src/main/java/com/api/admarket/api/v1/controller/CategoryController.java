@@ -3,11 +3,14 @@ package com.api.admarket.api.v1.controller;
 import com.api.admarket.api.v1.dto.ad.CategoryRequest;
 import com.api.admarket.api.v1.dto.ad.CategoryResponse;
 import com.api.admarket.api.v1.dto.mapper.CategoryMapper;
+import com.api.admarket.api.v1.dto.validation.OnCreate;
+import com.api.admarket.api.v1.dto.validation.OnUpdate;
 import com.api.admarket.api.v1.entity.ad.Category;
 import com.api.admarket.api.v1.service.CategoryService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -15,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/categories")
+@Validated
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -32,7 +36,7 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<CategoryResponse> create(
-            @RequestBody CategoryRequest request
+            @RequestBody @Validated(OnCreate.class) CategoryRequest request
     ) {
         Category categoryRequest = categoryMapper.toEntity(request);
         Category category = categoryService.create(categoryRequest, request.getParent());
@@ -51,7 +55,7 @@ public class CategoryController {
     @PutMapping("/{categoryName}")
     public ResponseEntity<CategoryResponse> updateByName(
             @PathVariable String categoryName,
-            @RequestBody CategoryRequest request
+            @RequestBody @Validated(OnUpdate.class) CategoryRequest request
     ) {
         Category categoryRequest = categoryMapper.toEntity(request);
         System.out.println(categoryRequest);
