@@ -7,6 +7,7 @@ import com.api.admarket.api.v1.exeption.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -57,7 +58,6 @@ public class ControllerAdvice {
             MethodArgumentNotValidException e
     ) {
         ExceptionBody exceptionBody = new ExceptionBody("Validation failed.");
-        List<FieldError> errors = e.getBindingResult().getFieldErrors();
         List<FieldError> errors = appendPasswordConfirm(e.getBindingResult());
         exceptionBody.setErrors(errors.stream()
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage))
