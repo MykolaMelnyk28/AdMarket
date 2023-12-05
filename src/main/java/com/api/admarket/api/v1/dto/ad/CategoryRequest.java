@@ -10,12 +10,12 @@ import org.hibernate.validator.constraints.Length;
 @Data
 public class CategoryRequest {
 
-    @NotBlank(message = "[category.name] must be 80 characters or less must not be empty", groups = OnCreate.class)
-    @Length(min = 3, max = 80, message = "[category.name] must be 80 characters or less", groups = {OnCreate.class})
-    @Size(min = 3, max = 80, message = "[category.name] must be 80 characters or less", groups = {OnUpdate.class})
+    @NotBlank(message = "Category name can not be null or .", groups = OnCreate.class)
+    @Length(min = 3, max = 80, message = "Category name must be 80 characters or less", groups = {OnCreate.class})
+    @Size(min = 3, max = 80, message = "Category name must be 80 characters or less", groups = {OnUpdate.class})
     private String name;
 
-    @Size(min = 3, max = 80, message = "[category.parent] must be 80 characters or less", groups = {OnCreate.class, OnUpdate.class})
+    @Size(min = 3, max = 80, message = "Category name must be 80 characters or less", groups = {OnCreate.class, OnUpdate.class})
     private String parent;
 
 }
