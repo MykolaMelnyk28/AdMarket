@@ -7,24 +7,24 @@ import com.api.admarket.api.v1.entity.user.UserEntity;
 import com.api.admarket.api.v1.entity.user.UserInfo;
 import com.api.admarket.api.v1.exeption.ResourceNotFoundException;
 import com.api.admarket.api.v1.repository.UserRepository;
-import com.api.admarket.api.v1.service.ImageService;
 import com.api.admarket.api.v1.service.UserService;
+import org.apache.catalina.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.Set;
 
-//@Service
+@Service
 public class SimpleUserService implements UserService {
 
     private final UserRepository userRepository;
-    private final ImageService imageService;
+    //private final ImageService imageService;
 
-    public SimpleUserService(UserRepository userRepository, ImageService imageService) {
+    public SimpleUserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.imageService = imageService;
     }
 
     @Override
@@ -38,6 +38,7 @@ public class SimpleUserService implements UserService {
     }
 
     private UserEntity create(UserEntity user, boolean isAdmin) {
+        System.out.println(user);
         if (getByUsername(user.getUsername()).isPresent()) {
             throw new IllegalStateException("User already exists.");
         }
@@ -86,33 +87,49 @@ public class SimpleUserService implements UserService {
     public UserEntity updateById(Long id, UserEntity user) {
         UserEntity found = getByIdOrThrow(id);
         copy(user, found);
+        userRepository.save(found);
         return found;
     }
 
     private void copy(UserEntity source, UserEntity destination) {
-        destination.setUsername(source.getUsername());
-        destination.setEmail(source.getEmail());
-        destination.setPhoneNumber(source.getPhoneNumber());
-        destination.setPasswordHash(source.getPasswordHash());
-        destination.setRoles(source.getRoles());
-        destination.setAccountStatus(source.getAccountStatus());
+        Class<?> sourceClass = source.getClass();
+        Field[] fields = sourceClass.getDeclaredFields();
 
-        if (source.getUserInfo() != null) {
-            UserInfo sourceInfo = source.getUserInfo();
-            UserInfo destinationInfo = destination.getUserInfo();
-            destinationInfo.setFirstName(sourceInfo.getFirstName());
-            destinationInfo.setLastName(sourceInfo.getLastName());
-            destinationInfo.setSurName(sourceInfo.getSurName());
-            destinationInfo.setCity(sourceInfo.getCity());
-            destinationInfo.setStreet(sourceInfo.getStreet());
-            destinationInfo.setPostalCode(sourceInfo.getPostalCode());
-            destinationInfo.setState(sourceInfo.getState());
-            destinationInfo.setAdditionalInfo(sourceInfo.getAdditionalInfo());
+        for (Field field : fields) {
+            field.setAccessible(true);
+
+            try {
+                Object value = field.get(source);
+
+                if (value != null) {
+                    if (value instanceof UserInfo) {
+                        copyUserInfo((UserInfo)value, destination.getUserInfo());
+                    } else {
+                        field.set(destination, value);
+                    }
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
+    }
 
-        destination.setImageUrls(source.getImageUrls());
-        destination.setAds(source.getAds());
-        destination.setSavedAds(source.getSavedAds());
+    private void copyUserInfo(UserInfo source, UserInfo destination) {
+        Class<?> sourceClass = source.getClass();
+        Field[] fields = sourceClass.getDeclaredFields();
+
+        for (Field field : fields) {
+            field.setAccessible(true);
+
+            try {
+                Object value = field.get(source);
+                if (value != null) {
+                    field.set(destination, value);
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -122,15 +139,16 @@ public class SimpleUserService implements UserService {
 
     @Override
     public String addImage(Long userId, Image image) {
-        String url = imageService.upload(image);
-        userRepository.addImage(userId, url);
-        return url;
+//        String url = imageService.upload(image);
+//        userRepository.addImage(userId, url);
+//        return url;
+        return "";
     }
 
     @Override
     public void deleteImage(Long userId, String url) {
-        imageService.unload(url);
-        userRepository.deleteImage(userId, url);
+//        imageService.unload(url);
+//        userRepository.deleteImage(userId, url);
     }
 
     private UserEntity getByIdOrThrow(Long id)
