@@ -18,7 +18,6 @@ import java.util.List;
 @PasswordConfirm(groups = OnCreate.class)
 public class UserDTO {
 
-    @Null(message = "Id can not be set", groups = {OnCreate.class, OnUpdate.class})
     @Min(value = 1, message = "Id can not be negative.", groups = {OnCreate.class, OnUpdate.class})
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;

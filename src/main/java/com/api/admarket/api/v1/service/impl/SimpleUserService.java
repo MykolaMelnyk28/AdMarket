@@ -8,7 +8,6 @@ import com.api.admarket.api.v1.entity.user.UserInfo;
 import com.api.admarket.api.v1.exeption.ResourceNotFoundException;
 import com.api.admarket.api.v1.repository.UserRepository;
 import com.api.admarket.api.v1.service.UserService;
-import org.apache.catalina.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
