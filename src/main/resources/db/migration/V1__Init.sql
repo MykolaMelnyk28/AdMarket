@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS users
 CREATE TABLE IF NOT EXISTS user_roles
 (
     user_id BIGINT,
-    role    ENUM ('USER', 'ADMIN') NOT NULL,
+    role    ENUM ('ROLE_USER', 'ROLE_ADMIN') NOT NULL,
     PRIMARY KEY (user_id, role),
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
