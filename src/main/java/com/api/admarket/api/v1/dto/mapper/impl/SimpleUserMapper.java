@@ -41,7 +41,7 @@ public class SimpleUserMapper implements UserMapper {
 
     private String getStringRole(Set<Role> roles) {
         Role role = roles.iterator().next();
-        return role.name().substring(0, 5).toLowerCase();
+        return role.name().substring(5).toLowerCase();
     }
 
     private List<String> getImagesOrEmptyList(List<String> images) {
@@ -56,6 +56,7 @@ public class SimpleUserMapper implements UserMapper {
             destination.setFirstName(source.getFirstName());
             destination.setLastName(source.getLastName());
             destination.setSurName(source.getSurName());
+            destination.setCountry(source.getCountry());
             destination.setCity(source.getCity());
             destination.setStreet(source.getStreet());
             destination.setPostalCode(source.getPostalCode());
@@ -85,9 +86,9 @@ public class SimpleUserMapper implements UserMapper {
     }
 
     private Set<Role> getUserRole(String role) {
-        StringBuilder roleBuilder = new StringBuilder();
-        roleBuilder.append("ROLE_")
-                .append(role.toUpperCase());
+        if (role == null) {
+            return null;
+        }
         String roleBuilt = "ROLE_" + role.toUpperCase();
         return Set.of(Role.valueOf(roleBuilt));
     }
@@ -100,6 +101,7 @@ public class SimpleUserMapper implements UserMapper {
         info.setFirstName(source.getFirstName());
         info.setLastName(source.getLastName());
         info.setSurName(source.getSurName());
+        info.setCountry(source.getCountry());
         info.setCity(source.getCity());
         info.setStreet(source.getStreet());
         info.setPostalCode(source.getPostalCode());
@@ -112,6 +114,7 @@ public class SimpleUserMapper implements UserMapper {
         return source.getFirstName() != null ||
                 source.getLastName() != null ||
                 source.getSurName() != null ||
+                source.getCountry() != null ||
                 source.getCity() != null ||
                 source.getStreet() != null ||
                 source.getPostalCode() != null ||

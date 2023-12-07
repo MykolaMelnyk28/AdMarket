@@ -3,10 +3,12 @@ package com.api.admarket.api.v1.dto.user;
 import com.api.admarket.api.v1.dto.validation.OnCreate;
 import com.api.admarket.api.v1.dto.validation.OnUpdate;
 import com.api.admarket.api.v1.dto.validation.PasswordConfirm;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,7 +18,9 @@ import java.util.List;
 @PasswordConfirm(groups = OnCreate.class)
 public class UserDTO {
 
-    @Min(value = 1, message = "Id can not be negative.")
+    @Null(message = "Id can not be set", groups = {OnCreate.class, OnUpdate.class})
+    @Min(value = 1, message = "Id can not be negative.", groups = {OnCreate.class, OnUpdate.class})
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     @NotBlank(message = "Username can not be empty.",
@@ -30,10 +34,12 @@ public class UserDTO {
     @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!?@#$%^&*(),\\.<>\\[\\]{}\"'|\\\\:;`~+\\-*\\/]).{8,}$",
             message = "Invalid password format.",
             groups = {OnCreate.class, OnUpdate.class})
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @NotBlank(message = "Password confirm can not be null.",
             groups = OnCreate.class)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String passwordConfirm;
 
     @NotBlank(message = "Email can not be null.",
@@ -58,12 +64,15 @@ public class UserDTO {
 
     @NotBlank(message = "Account status can not be null.",
             groups = OnCreate.class)
-    @Pattern(regexp = "^(active|noactive|blocked)$",
+    @Pattern(regexp = "^(active|noactivate|blocked)$",
             message = "Incorrect account status value.",
-    groups = {OnCreate.class, OnUpdate.class})
-    private String accountStatus = "noactive";
+            groups = {OnCreate.class, OnUpdate.class})
+    private String accountStatus = "noactivate";
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime dateRegistered;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime dateUpdated;
 
     @NotBlank(message = "Firstname can not be null.",
@@ -84,6 +93,12 @@ public class UserDTO {
             message = "Surname must be 20 characters or less.",
             groups = {OnCreate.class, OnUpdate.class})
     private String surName;
+
+    @NotBlank(message = "Country can not be null or empty.",
+            groups = {OnCreate.class})
+    @Length(max = 50,
+            message = "Country must be 50 or less")
+    private String country;
 
     @NotBlank(message = "City can not be null.",
             groups = OnCreate.class)
@@ -111,14 +126,12 @@ public class UserDTO {
             groups = {OnCreate.class, OnUpdate.class})
     private String state;
 
-    @NotBlank(message = "Role can not be null.")
-    @Pattern(regexp = "^(user|admin)$",
-            message = "Role incorrect value.",
-            groups = {OnCreate.class, OnUpdate.class})
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String role;
 
     private String additionalAddressInfo;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<String> images = new ArrayList<>();
 
 }

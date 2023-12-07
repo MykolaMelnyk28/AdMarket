@@ -4,13 +4,13 @@
 CREATE TABLE IF NOT EXISTS user_info
 (
     id              BIGINT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    first_name      VARCHAR(20) NOT NULL,
-    last_name       VARCHAR(20) NOT NULL,
+    first_name      VARCHAR(20),
+    last_name       VARCHAR(20),
     sur_name        VARCHAR(20),
-    country         VARCHAR(50) NOT NULL,
-    city            VARCHAR(50) NOT NULL,
-    street_address  VARCHAR(60) NOT NULL,
-    postal_code     VARCHAR(10) NOT NULL,
+    country         VARCHAR(50),
+    city            VARCHAR(50),
+    street_address  VARCHAR(60),
+    postal_code     VARCHAR(10),
     state           VARCHAR(50),
     additional_info TEXT
 );

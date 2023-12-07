@@ -26,6 +26,9 @@ public class UserInfo {
 
     private String surName;
 
+    @Column(nullable = false, length = 50)
+    private String country;
+
     @Column(nullable = false)
     private String city;
 
