@@ -1,7 +1,6 @@
 package com.api.admarket.api.v1.dto.mapper.impl;
 
-import com.api.admarket.api.v1.dto.ad.CategoryRequest;
-import com.api.admarket.api.v1.dto.ad.CategoryResponse;
+import com.api.admarket.api.v1.dto.ad.CategoryDTO;
 import com.api.admarket.api.v1.dto.mapper.CategoryMapper;
 import com.api.admarket.api.v1.entity.ad.Category;
 import org.springframework.stereotype.Component;
@@ -13,49 +12,64 @@ import java.util.List;
 public class SimpleCategoryMapper implements CategoryMapper {
 
     @Override
-    public CategoryResponse toResponse(Category category) {
-        if (category == null) {
-            return null;
-        }
-
-        CategoryResponse response = new CategoryResponse();
-        response.setName(category.getName());
-        response.setChildren(getChildrenOrEmptyList(category));
-
-        return response;
-    }
-
-    private List<CategoryResponse> getChildrenOrEmptyList(Category category) {
-        List<Category> categories = category.getChildren();
-        if (categories == null || categories.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return category.getChildren().stream()
-                .map(this::toResponse)
-                .toList();
-    }
-
-    @Override
-    public Category toEntity(CategoryRequest request) {
-        if (request == null) {
+    public Category toEntity(CategoryDTO dto) {
+        if (dto == null) {
             return null;
         }
 
         Category category = new Category();
-        category.setName(request.getName());
-
-        category.setParent(getParentCategoryOrNull(request));
+        category.setName(dto.getName());
+        category.setParent(getParentOrNull(dto));
+        category.setChildren(getEntityChildrenOrEmptyList(dto));
 
         return category;
     }
 
-    private Category getParentCategoryOrNull(CategoryRequest request) {
-        if (request.getParent() == null) {
+    private Category getParentOrNull(CategoryDTO dto) {
+        if (dto.getParent() == null) {
             return null;
         }
         Category parent = new Category();
-        parent.setName(request.getParent());
+        parent.setName(dto.getParent());
         return parent;
+    }
+
+    private List<Category> getEntityChildrenOrEmptyList(CategoryDTO dto) {
+        List<CategoryDTO> dtos = dto.getChildren();
+        if (dtos == null || dtos.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return dtos.stream()
+                .map(this::toEntity)
+                .toList();
+    }
+
+    @Override
+    public CategoryDTO toDto(Category category) {
+        if (category == null) {
+            return null;
+        }
+
+        CategoryDTO dto = new CategoryDTO();
+        dto.setName(category.getName());
+        dto.setParent(getParentOrNull(category));
+        dto.setChildren(getChildrenOrEmptyList(category));
+
+        return dto;
+    }
+
+    private String getParentOrNull(Category category) {
+        return (category.getParent() == null) ? null : category.getParent().getName();
+    }
+
+    private List<CategoryDTO> getChildrenOrEmptyList(Category category) {
+        List<Category> categories = category.getChildren();
+        if (categories == null || categories.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return categories.stream()
+                .map(this::toDto)
+                .toList();
     }
 
 }

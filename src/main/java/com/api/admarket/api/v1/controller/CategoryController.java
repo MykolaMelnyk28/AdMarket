@@ -1,10 +1,8 @@
 package com.api.admarket.api.v1.controller;
 
-import com.api.admarket.api.v1.dto.ad.CategoryRequest;
-import com.api.admarket.api.v1.dto.ad.CategoryResponse;
+import com.api.admarket.api.v1.dto.ad.CategoryDTO;
 import com.api.admarket.api.v1.dto.mapper.CategoryMapper;
-import com.api.admarket.api.v1.dto.validation.OnCreate;
-import com.api.admarket.api.v1.dto.validation.OnUpdate;
+import com.api.admarket.api.v1.dto.validation.*;
 import com.api.admarket.api.v1.entity.ad.Category;
 import com.api.admarket.api.v1.service.CategoryService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,32 +33,32 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponse> create(
-            @RequestBody @Validated(OnCreate.class) CategoryRequest request
+    public ResponseEntity<CategoryDTO> create(
+            @RequestBody @Validated(OnCreate.class) CategoryDTO request
     ) {
         Category categoryRequest = categoryMapper.toEntity(request);
         Category category = categoryService.create(categoryRequest, request.getParent());
-        CategoryResponse response = categoryMapper.toResponse(category);
+        CategoryDTO response = categoryMapper.toDto(category);
+        System.out.println(response);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/{categoryName}")
-    public ResponseEntity<CategoryResponse> getByName(
+    public ResponseEntity<CategoryDTO> getByName(
             @PathVariable String categoryName
     ) {
         Optional<Category> categoryOpt = categoryService.getByName(categoryName);
-        return ResponseEntity.of(categoryOpt.map(categoryMapper::toResponse));
+        return ResponseEntity.of(categoryOpt.map(categoryMapper::toDto));
     }
 
     @PutMapping("/{categoryName}")
-    public ResponseEntity<CategoryResponse> updateByName(
+    public ResponseEntity<CategoryDTO> updateByName(
             @PathVariable String categoryName,
-            @RequestBody @Validated(OnUpdate.class) CategoryRequest request
+            @RequestBody @Validated(OnUpdate.class) CategoryDTO request
     ) {
         Category categoryRequest = categoryMapper.toEntity(request);
-        System.out.println(categoryRequest);
         Category category = categoryService.updateByName(categoryName, categoryRequest);
-        CategoryResponse response = categoryMapper.toResponse(category);
+        CategoryDTO response = categoryMapper.toDto(category);
         return ResponseEntity.ok(response);
     }
 
