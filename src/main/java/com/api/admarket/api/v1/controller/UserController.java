@@ -1,10 +1,14 @@
 package com.api.admarket.api.v1.controller;
 
+import com.api.admarket.api.v1.dto.ad.AdDTO;
+import com.api.admarket.api.v1.dto.mapper.AdMapper;
 import com.api.admarket.api.v1.dto.mapper.UserMapper;
 import com.api.admarket.api.v1.dto.user.UserDTO;
 import com.api.admarket.api.v1.dto.validation.OnCreate;
 import com.api.admarket.api.v1.dto.validation.OnUpdate;
+import com.api.admarket.api.v1.entity.ad.AdEntity;
 import com.api.admarket.api.v1.entity.user.UserEntity;
+import com.api.admarket.api.v1.service.AdService;
 import com.api.admarket.api.v1.service.UserService;
 import lombok.AllArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -16,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -26,7 +29,9 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private final AdService adService;
     private final UserMapper userMapper;
+    private final AdMapper adMapper;
 
     @PostMapping("/admin")
     public ResponseEntity<UserDTO> createAdmin(
@@ -84,4 +89,25 @@ public class UserController {
         userService.deleteById(id);
         return HttpStatus.OK;
     }
+
+    @GetMapping("/{userId}/ads")
+    public ResponseEntity<Page<AdDTO>> getAllAds(
+            @PathVariable Long userId
+    ) {
+        Page<AdEntity> pageEntity = adService.getAllByUserId(userId, PageRequest.ofSize(10));
+        Page<AdDTO> pageDto = pageEntity.map(adMapper::toDto);
+        return ResponseEntity.ok(pageDto);
+    }
+
+    @PostMapping("/{userId}/ads")
+    public ResponseEntity<AdDTO> create(
+            @PathVariable Long userId,
+            @RequestBody @Validated(OnCreate.class) AdDTO dto
+    ) {
+        AdEntity entity = adMapper.toEntity(dto);
+        AdEntity created = adService.create(entity, userId);
+        AdDTO response = adMapper.toDto(created);
+        return ResponseEntity.ok(response);
+    }
+
 }
