@@ -3,7 +3,9 @@ package com.api.admarket.api.v1.dto.mapper.impl;
 import com.api.admarket.api.v1.dto.ad.AdDTO;
 import com.api.admarket.api.v1.dto.mapper.AdMapper;
 import com.api.admarket.api.v1.dto.mapper.CategoryMapper;
+import com.api.admarket.api.v1.dto.user.UserDTO;
 import com.api.admarket.api.v1.entity.ad.*;
+import com.api.admarket.api.v1.entity.user.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +23,10 @@ public class SimpleAdMapper implements AdMapper {
 
         AdDTO dto = new AdDTO();
 
+        dto.setId(entity.getId());
         dto.setTitle(entity.getTitle());
-        dto.setCategory(categoryMapper.toDto(entity.getCategory()));
+        dto.setCategory(getCategoryName(entity));
+        dto.setSellerUsername(getSellerUsername(entity));
         dto.setPrice(entity.getPrice());
         dto.setCurrencyCode(entity.getCurrency());
         dto.setDescription(entity.getDescription());
@@ -32,6 +36,19 @@ public class SimpleAdMapper implements AdMapper {
         dto.setDateCreated(entity.getDateCreated());
 
         return dto;
+    }
+
+    private String getCategoryName(AdEntity entity) {
+        if (entity == null || entity.getCategory() == null || entity.getCategory().getName() == null) {
+            return null;
+        }
+        return entity.getCategory().getName();
+    }
+    private String getSellerUsername(AdEntity adEntity) {
+        if (adEntity == null || adEntity.getUser() == null || adEntity.getUser().getUsername() == null) {
+            return null;
+        }
+        return adEntity.getUser().getUsername();
     }
 
     private String getStatusString(AdEntity entity) {
@@ -56,17 +73,37 @@ public class SimpleAdMapper implements AdMapper {
 
         AdEntity entity = new AdEntity();
 
-        entity.setTitle(entity.getTitle());
-        entity.setCategory(categoryMapper.toEntity(dto.getCategory()));
-        entity.setPrice(entity.getPrice());
-        entity.setCurrency(entity.getCurrency());
-        entity.setDescription(entity.getDescription());
+        entity.setId(dto.getId());
+        entity.setTitle(dto.getTitle());
+        entity.setCategory(getCategoryEntity(dto));
+        entity.setUser(getSellerEntity(dto));
+        entity.setPrice(dto.getPrice());
+        entity.setCurrency(dto.getCurrencyCode());
+        entity.setDescription(dto.getDescription());
         entity.setStatus(getStatusEnum(dto));
         entity.setItemCondition(getItemConditionEnum(dto));
-        entity.setViewsCount(entity.getViewsCount());
-        entity.setDateCreated(entity.getDateCreated());
+        entity.setViewsCount(dto.getViewsCount());
+        entity.setDateCreated(dto.getDateCreated());
 
         return entity;
+    }
+
+    private Category getCategoryEntity(AdDTO dto) {
+        if (dto == null || dto.getCategory() == null) {
+            return null;
+        }
+        Category category = new Category();
+        category.setName(dto.getCategory());
+        return category;
+    }
+
+    private UserEntity getSellerEntity(AdDTO dto) {
+        if (dto == null || dto.getSellerUsername() == null) {
+            return null;
+        }
+        UserEntity seller = new UserEntity();
+        seller.setUsername(dto.getSellerUsername());
+        return seller;
     }
 
     private AdStatus getStatusEnum(AdDTO dto) {
