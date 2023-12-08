@@ -149,11 +149,10 @@ CREATE TABLE IF NOT EXISTS saved_ads
 # TRIGGERS
 
 CREATE TRIGGER before_insert_ads
-    BEFORE INSERT
-    ON ads
-    FOR EACH ROW
+BEFORE INSERT ON ads
+FOR EACH ROW
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM categories c WHERE c.id = NEW.id AND c.is_leaf = true) THEN
+    IF NOT EXISTS (SELECT 1 FROM categories c WHERE c.id = NEW.category_id AND c.is_leaf = true) THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Category is not a leaf category';
     END IF;
