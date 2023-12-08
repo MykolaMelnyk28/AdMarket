@@ -1,26 +1,41 @@
 package com.api.admarket.api.v1.service.impl;
 
 import com.api.admarket.api.v1.entity.ad.AdEntity;
+import com.api.admarket.api.v1.entity.ad.Category;
 import com.api.admarket.api.v1.entity.image.Image;
+import com.api.admarket.api.v1.entity.user.UserEntity;
+import com.api.admarket.api.v1.exeption.CategoryNotLeafException;
 import com.api.admarket.api.v1.exeption.ResourceNotFoundException;
 import com.api.admarket.api.v1.repository.AdRepository;
 import com.api.admarket.api.v1.service.AdService;
 import com.api.admarket.api.v1.service.CategoryService;
 import com.api.admarket.api.v1.service.ImageService;
+import com.api.admarket.api.v1.service.UserService;
+import jakarta.validation.constraints.Null;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-//@Service
+@Service
 public class SimpleAdService implements AdService {
     private final AdRepository adRepository;
-    private final ImageService imageService;
+    private final CategoryService categoryService;
+    private final UserService userService;
+    //private final ImageService imageService;
 
-    public SimpleAdService(AdRepository adRepository, ImageService imageService) {
+    public SimpleAdService(
+            AdRepository adRepository,
+            CategoryService categoryService,
+            UserService userService
+    ) {
         this.adRepository = adRepository;
-        this.imageService = imageService;
+        this.categoryService = categoryService;
+        this.userService = userService;
+        //this.imageService = imageService;
     }
 
     @Override
@@ -28,9 +43,43 @@ public class SimpleAdService implements AdService {
         if (ad.getId() != null && getById(ad.getId()).isPresent()) {
             throw new IllegalStateException("User already exists.");
         }
+        includeCategory(ad);
+        includeUser(ad);
         AdEntity saved = adRepository.save(ad);
-        adRepository.assignUser(userId, ad.getId());
         return saved;
+    }
+
+    private void includeUser(AdEntity ad) throws ResourceNotFoundException {
+        if (ad.getUser() == null) {
+            throw new NullPointerException("User can not be null");
+        }
+        String username = ad.getUser().getUsername();
+        if (username == null) {
+            throw new NullPointerException("Category name can not be null");
+        }
+        UserEntity found = userService.getByUsername(username).orElseThrow(() ->
+                new ResourceNotFoundException("User not found"));
+        ad.setUser(found);
+    }
+
+    private void includeCategory(AdEntity ad)
+            throws ResourceNotFoundException,
+            CategoryNotLeafException {
+        if (ad.getCategory() == null) {
+            throw new NullPointerException("Category can not be null");
+        }
+        String categoryName = ad.getCategory().getName();
+        if (categoryName == null) {
+            throw new NullPointerException("Category name can not be null");
+        }
+        Category found = categoryService.getByName(categoryName).orElseThrow(() ->
+                new ResourceNotFoundException("Category not found"));
+
+        if (!found.isLeaf()) {
+            throw new CategoryNotLeafException("Category is not a leaf", found);
+        }
+
+        ad.setCategory(found);
     }
 
     @Override
@@ -85,15 +134,16 @@ public class SimpleAdService implements AdService {
 
     @Override
     public String addImage(Long userId, Image image) {
-        String url = imageService.upload(image);
-        adRepository.addImage(userId, url);
-        return url;
+//        String url = imageService.upload(image);
+//        adRepository.addImage(userId, url);
+        //return url;
+        return "";
     }
 
     @Override
     public void deleteImage(Long userId, String url) {
-        imageService.unload(url);
-        adRepository.deleteImage(userId, url);
+//        imageService.unload(url);
+//        adRepository.deleteImage(userId, url);
     }
 
     private AdEntity getByIdOrThrow(Long adId) {
