@@ -27,12 +27,6 @@ public interface AdRepository extends JpaRepository<AdEntity, Long> {
             """, nativeQuery = true)
     Page<AdEntity> findAllByTitleContains(String categoryName, String title, Pageable pageable);
 
-    @Query(value = """
-        SELECT * FROM users_ads ua
-        JOIN users u ON ua.user_id = u.id
-        JOIN ads a ON ua.ad_id = a.id
-        WHERE u.id = :sellerId
-        """, nativeQuery = true)
     Page<AdEntity> findAllByUserId(Long sellerId, Pageable pageable);
 
     @Query(value = """
