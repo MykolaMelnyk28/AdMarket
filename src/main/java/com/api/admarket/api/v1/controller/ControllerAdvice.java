@@ -1,9 +1,6 @@
 package com.api.admarket.api.v1.controller;
 
-import com.api.admarket.api.v1.exeption.AccessDeniedException;
-import com.api.admarket.api.v1.exeption.ExceptionBody;
-import com.api.admarket.api.v1.exeption.ResourceMappingException;
-import com.api.admarket.api.v1.exeption.ResourceNotFoundException;
+import com.api.admarket.api.v1.exeption.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -15,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -76,6 +74,16 @@ public class ControllerAdvice {
 
         return passwordConfirmErrors;
     }
+
+    @ExceptionHandler(CategoryNotLeafException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionBody handleCategoryNotLeaf(
+            CategoryNotLeafException e
+    ) {
+        e.printStackTrace();
+        return new ExceptionBody("Category is not a leaf");
+    }
+
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
