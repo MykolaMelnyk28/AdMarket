@@ -7,6 +7,7 @@ import com.api.admarket.api.v1.dto.user.UserDTO;
 import com.api.admarket.api.v1.dto.validation.OnCreate;
 import com.api.admarket.api.v1.dto.validation.OnUpdate;
 import com.api.admarket.api.v1.entity.ad.AdEntity;
+import com.api.admarket.api.v1.entity.ad.SavedAd;
 import com.api.admarket.api.v1.entity.user.UserEntity;
 import com.api.admarket.api.v1.service.AdService;
 import com.api.admarket.api.v1.service.UserService;
@@ -108,6 +109,33 @@ public class UserController {
         AdEntity created = adService.create(entity, userId);
         AdDTO response = adMapper.toDto(created);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{userId}/saved/ads/{adId}")
+    public ResponseEntity<AdDTO> addSaveAdById(
+            @PathVariable Long userId,
+            @PathVariable Long adId
+    ) {
+        AdEntity entity = adService.appendSaveAd(userId, adId);
+        AdDTO dto = adMapper.toDto(entity);
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/{userId}/saved/ads")
+    public ResponseEntity<Page<AdDTO>> getAllAdFromSavedList(
+            @PathVariable Long userId
+    ) {
+        Page<AdEntity> ads = adService.getAllSavedAdsByUserId(userId, PageRequest.ofSize(10));
+        return ResponseEntity.ok(ads.map(adMapper::toDto));
+    }
+
+    @DeleteMapping("/{userId}/saved/ads/{adId}")
+    public HttpStatus deleteAdFromSavedList(
+            @PathVariable Long userId,
+            @PathVariable Long adId
+    ) {
+        adService.deleteSavedAd(userId, adId);
+        return HttpStatus.OK;
     }
 
 }

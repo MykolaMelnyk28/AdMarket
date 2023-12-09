@@ -15,10 +15,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
+@Transactional
 public class SimpleAdService implements AdService {
     private final AdRepository adRepository;
     private final CategoryService categoryService;
@@ -103,8 +105,19 @@ public class SimpleAdService implements AdService {
     }
 
     @Override
+    public AdEntity appendSaveAd(Long userId, Long adId) {
+        adRepository.addSaveAd(userId, adId);
+        return getByIdOrThrow(adId);
+    }
+
+    @Override
     public Page<AdEntity> getAllSavedAdsByUserId(Long userId, Pageable pageable) {
         return adRepository.findSavedAdsByUserId(userId, pageable);
+    }
+
+    @Override
+    public void deleteSavedAd(Long userId, Long adId) {
+        adRepository.deleteSavedAdById(userId, adId);
     }
 
     @Override

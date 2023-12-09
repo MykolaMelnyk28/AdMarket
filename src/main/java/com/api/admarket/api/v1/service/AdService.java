@@ -15,7 +15,11 @@ public interface AdService {
     Page<AdEntity> getAll(Pageable pageable);
     Page<AdEntity> getAllByFilter(FilterProperties filterProperties);
     Page<AdEntity> getAllByUserId(Long sellerId, Pageable pageable);
+
+    AdEntity appendSaveAd(Long userId, Long adId);
     Page<AdEntity> getAllSavedAdsByUserId(Long userId, Pageable pageable);
+    void deleteSavedAd(Long userId, Long adId);
+
     AdEntity updateById(Long adId, AdEntity ad);
     void deleteById(Long adId);
 

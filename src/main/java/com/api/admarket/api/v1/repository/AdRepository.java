@@ -36,10 +36,24 @@ public interface AdRepository extends JpaRepository<AdEntity, Long> {
         """)
     void deleteById(Long id);
 
+    @Modifying
+    @Query(value = """
+        INSERT INTO saved_ads(user_id, ad_id)
+        VALUES (:userId, :adId);
+        """, nativeQuery = true)
+    void addSaveAd(Long userId, Long adId);
+
     @Query(value = """
             SELECT sa.ad FROM SavedAd sa WHERE sa.user.id = :userId
             """)
     Page<AdEntity> findSavedAdsByUserId(Long userId, Pageable pageable);
+
+    @Modifying
+    @Query("""
+        DELETE FROM SavedAd sa
+        WHERE sa.user.id = :userId AND sa.ad.id = :adId
+        """)
+    void deleteSavedAdById(Long userId, Long adId);
 
     @Modifying
     @Query(value = """
