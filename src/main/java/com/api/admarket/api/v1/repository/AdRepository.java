@@ -1,5 +1,6 @@
 package com.api.admarket.api.v1.repository;
 
+import com.api.admarket.api.v1.entity.ad.FilterProperties;
 import com.api.admarket.api.v1.entity.ad.AdEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,22 +13,28 @@ import org.springframework.stereotype.Repository;
 public interface AdRepository extends JpaRepository<AdEntity, Long> {
 
     @Query(value = """
-            WITH RECURSIVE CategoryHierarchy AS (
-                SELECT name, parent_name, is_leaf
-                FROM categories
-                WHERE name = :categoryName
-                UNION ALL
-                SELECT c.name, c.parent_name, c.is_leaf
-                FROM categories c
-                JOIN CategoryHierarchy ch ON c.parent_name = ch.name
-            )
-            SELECT a.* FROM ads a
-            JOIN CategoryHierarchy ch ON a.category_name = ch.name
-            WHERE a.title LIKE CONCAT('%', :title, '%')
-            """, nativeQuery = true)
-    Page<AdEntity> findAllByTitleContains(String categoryName, String title, Pageable pageable);
+        WITH RECURSIVE CategoryHierarchy AS (
+            SELECT id, name, parent_id
+            FROM categories
+            WHERE name = :#{#filterPs.category}
+            UNION ALL
+            SELECT c.id, c.name, c.parent_id
+            FROM categories c
+            JOIN CategoryHierarchy ch ON c.parent_id = ch.id
+        )
+        SELECT a.*, ua.user_id FROM ads a
+        JOIN users_ads ua ON ua.ad_id = a.id
+        JOIN CategoryHierarchy ch ON a.category_id = ch.id
+        """, nativeQuery = true)
+    Page<AdEntity> findAdsByFilters(FilterProperties filterPs, Pageable pageable);
 
     Page<AdEntity> findAllByUserId(Long sellerId, Pageable pageable);
+
+    @Modifying
+    @Query(value = """
+        DELETE FROM AdEntity a WHERE a.id = :id
+        """)
+    void deleteById(Long id);
 
     @Query(value = """
             SELECT sa.ad FROM SavedAd sa WHERE sa.user.id = :userId

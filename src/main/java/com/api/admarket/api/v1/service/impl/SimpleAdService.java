@@ -1,5 +1,6 @@
 package com.api.admarket.api.v1.service.impl;
 
+import com.api.admarket.api.v1.entity.ad.FilterProperties;
 import com.api.admarket.api.v1.entity.ad.AdEntity;
 import com.api.admarket.api.v1.entity.ad.Category;
 import com.api.admarket.api.v1.entity.image.Image;
@@ -9,12 +10,9 @@ import com.api.admarket.api.v1.exeption.ResourceNotFoundException;
 import com.api.admarket.api.v1.repository.AdRepository;
 import com.api.admarket.api.v1.service.AdService;
 import com.api.admarket.api.v1.service.CategoryService;
-import com.api.admarket.api.v1.service.ImageService;
 import com.api.admarket.api.v1.service.UserService;
-import jakarta.validation.constraints.Null;
-import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -93,9 +91,11 @@ public class SimpleAdService implements AdService {
     }
 
     @Override
-    public Page<AdEntity> getAllByPartialTitle(String categoryName, String title, Pageable pageable) {
-        return adRepository.findAllByTitleContains(categoryName, title, pageable);
+    public Page<AdEntity> getAllByFilter(FilterProperties filterPs) {
+        Pageable pageable = PageRequest.of(filterPs.getPage(), filterPs.getLimit());
+        return adRepository.findAdsByFilters(filterPs, pageable);
     }
+
 
     @Override
     public Page<AdEntity> getAllByUserId(Long sellerId, Pageable pageable) {
