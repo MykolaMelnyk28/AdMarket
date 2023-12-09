@@ -76,4 +76,13 @@ public interface AdRepository extends JpaRepository<AdEntity, Long> {
         """, nativeQuery = true)
     void deleteImage(Long adId, String url);
 
+    @Modifying
+    @Query(value = """
+        UPDATE ads a 
+        SET a.views_count = a.views_count + 1
+        WHERE a.id = :id
+        """, nativeQuery = true)
+    void incrementViewsCountById(Long id);
+
+
 }

@@ -39,7 +39,9 @@ public class AdController {
             @PathVariable Long adId
     ) {
         Optional<AdEntity> found = adService.getById(adId);
-        return ResponseEntity.of(found.map(adMapper::toDto));
+        Optional<AdDTO> response = found.map(adMapper::toDto);
+        adService.incrementViews(adId);
+        return ResponseEntity.of(response);
     }
 
     @PutMapping("/{adId}")

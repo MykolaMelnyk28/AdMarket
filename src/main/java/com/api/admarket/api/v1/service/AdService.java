@@ -26,4 +26,5 @@ public interface AdService {
     String addImage(Long adId, Image image);
     void deleteImage(Long adId, String url);
 
+    void incrementViews(Long adId);
 }

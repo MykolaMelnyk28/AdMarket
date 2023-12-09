@@ -159,6 +159,11 @@ public class SimpleAdService implements AdService {
 //        adRepository.deleteImage(userId, url);
     }
 
+    @Override
+    public void incrementViews(Long adId) {
+        adRepository.incrementViewsCountById(adId);
+    }
+
     private AdEntity getByIdOrThrow(Long adId) {
         return adRepository.findById(adId).orElseThrow(() ->
                 new ResourceNotFoundException("Ad not found")
