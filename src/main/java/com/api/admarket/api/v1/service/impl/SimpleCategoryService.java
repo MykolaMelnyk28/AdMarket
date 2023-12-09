@@ -7,6 +7,7 @@ import com.api.admarket.api.v1.service.CategoryService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,11 +50,30 @@ public class SimpleCategoryService implements CategoryService {
 
     @Override
     public List<Category> getAllByParent(String parentName, boolean subInclude) {
-        List<Category> categories = getOrThrow(parentName).getChildren();
-        if (!subInclude) {
-            categories = categories.stream().peek(x -> x.setChildren(null)).toList();
+        if (subInclude) {
+            return getAllCategoryHierarchy(parentName);
+        } else {
+            Category category = getOrThrow(parentName);
+            return (category.getChildren() == null) ? null : new ArrayList<>();
         }
-        return categories;
+    }
+
+    public List<Category> getAllCategoryHierarchy(String categoryName) {
+        Category category = getOrThrow(categoryName);
+        List<Category> list = getCategoryHierarchyRcurs(category, new ArrayList<>());
+        return list;
+    }
+
+    public List<Category> getCategoryHierarchyRcurs(Category category, List<Category> list) {
+        List<Category> subCategory = category.getChildren();
+        if (subCategory == null || subCategory.isEmpty()) {
+            return new ArrayList<>();
+        }
+        for(Category c : subCategory) {
+            list.add(c);
+            getCategoryHierarchyRcurs(c, list);
+        }
+        return list;
     }
 
     @Override
