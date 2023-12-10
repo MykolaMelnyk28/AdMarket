@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,29 +34,6 @@ public class UserController {
     private final AdService adService;
     private final UserMapper userMapper;
     private final AdMapper adMapper;
-
-    @PostMapping("/admin")
-    public ResponseEntity<UserDTO> createAdmin(
-            @RequestBody @Validated(OnCreate.class) UserDTO request
-    ) {
-        return ResponseEntity.ok(createResponse(request, true));
-    }
-
-    @PostMapping
-    public ResponseEntity<UserDTO> create(
-            @RequestBody @Validated(OnCreate.class) UserDTO request
-    ) {
-        return ResponseEntity.ok(createResponse(request, false));
-    }
-
-    private UserDTO createResponse(UserDTO request, boolean isAdmin) {
-        UserEntity user = userMapper.toEntity(request);
-        UserEntity created = (isAdmin)
-                ? userService.createAdmin(user)
-                : userService.createUser(user);
-        UserDTO response = userMapper.toDto(created);
-        return response;
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getById(
