@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
 import java.util.Optional;
@@ -118,6 +119,14 @@ public class SimpleUserService implements UserService {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isAdSeller(String username, Long adId) {
+        UserEntity user = getByUsername(username).orElseThrow(() ->
+                new ResourceNotFoundException("User not found"));
+        return userRepository.isAdSeller(user.getId(), adId);
     }
 
     @Override

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -17,6 +18,12 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByEmail(String email);
     Optional<UserEntity> findByPhoneNumber(String phoneNumber);
     Page<UserEntity> findAllByAccountStatus(AccountStatus accountStatus, Pageable pageable);
+
+    @Query(value = """
+        SELECT EXISTS(SELECT 1 FROM AdEntity a
+        WHERE a.id = :adId AND a.user.id = :userId)
+        """)
+    boolean isAdSeller(@Param("userId") Long userId, @Param("adId") Long adId);
 
     @Modifying
     @Query(value = """

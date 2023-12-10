@@ -22,6 +22,8 @@ public interface UserService {
     UserEntity updateById(Long userId, UserEntity user);
     void deleteById(Long userId);
 
+    boolean isAdSeller(String username, Long adId);
+
     String addImage(Long userId, Image image);
     void deleteImage(Long userId, String url);
 
