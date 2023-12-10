@@ -16,3 +16,9 @@ spring:
     show-sql: true
   flyway:
     enabled: true
+
+security:
+  jwt:
+    secret: "cXdlcnR5dWlvcFtdYXNkZmdoamtsOyd6eGN2Ym5tLGA="
+    access: 3600000
+    refresh: 2592000000
