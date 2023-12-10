@@ -1,13 +1,11 @@
 package com.api.admarket.config;
 
-import com.api.admarket.api.v1.exeption.AccessDeniedException;
 import com.api.admarket.api.v1.repository.UserRepository;
 import com.api.admarket.config.security.JwtAuthenticationFilter;
 import com.api.admarket.config.security.SimpleUserDetailsService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -20,7 +18,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -65,7 +62,15 @@ public class ApplicationConfig {
             request.anyRequest().permitAll();
         });
         http.exceptionHandling(handling -> {
-            handling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+            handling.authenticationEntryPoint((request, response, exception) -> {
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.getWriter().write("Unauthorized");
+            });
+
+            handling.accessDeniedHandler(((request, response, exception) -> {
+                response.setStatus(HttpStatus.FORBIDDEN.value());
+                response.getWriter().write("Unauthorized");
+            }));
         });
         http.sessionManagement(sessions -> {
             sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
