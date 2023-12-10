@@ -85,27 +85,4 @@ public class CategoryController {
         categoryService.deleteByName(categoryName);
         return HttpStatus.OK;
     }
-
-    @GetMapping("/")
-    public ResponseEntity<Page<AdDTO>> getAllAds(
-            @ModelAttribute FilterRequest filters
-    ) {
-        Page<AdEntity> page = getPageAds("all", filters);
-        return ResponseEntity.ok(page.map(adMapper::toDto));
-    }
-
-    @GetMapping("/{categoryName}/")
-    public ResponseEntity<Page<AdDTO>> getAllAdsByCategory(
-            @PathVariable String categoryName,
-            @ModelAttribute FilterRequest filters
-    ) {
-        Page<AdEntity> page = getPageAds(categoryName, filters);
-        return ResponseEntity.ok(page.map(adMapper::toDto));
-    }
-
-    private Page<AdEntity> getPageAds(String categoryName, FilterRequest filters) {
-        FilterProperties filterPsEntity = filtersMapper.toEntity(filters);
-        filterPsEntity.setCategory(categoryName);
-        return adService.getAllByFilter(filterPsEntity);
-    }
 }
