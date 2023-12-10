@@ -8,8 +8,10 @@ import com.api.admarket.api.v1.entity.user.UserInfo;
 import com.api.admarket.api.v1.exeption.ResourceNotFoundException;
 import com.api.admarket.api.v1.repository.UserRepository;
 import com.api.admarket.api.v1.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
@@ -17,33 +19,20 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class SimpleUserService implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     //private final ImageService imageService;
 
-    public SimpleUserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
-    public UserEntity createUser(UserEntity user) {
-        return create(user, false);
-    }
-
-    @Override
-    public UserEntity createAdmin(UserEntity user) {
-        return create(user, true);
-    }
-
-    private UserEntity create(UserEntity user, boolean isAdmin) {
-        System.out.println(user);
+    public UserEntity create(UserEntity user) {
         if (getByUsername(user.getUsername()).isPresent()) {
             throw new IllegalStateException("User already exists.");
         }
-        user.setRoles(Set.of((isAdmin)
-                ? Role.ROLE_ADMIN
-                : Role.ROLE_USER));
+        user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
         UserEntity saved = userRepository.save(user);
         return saved;
     }

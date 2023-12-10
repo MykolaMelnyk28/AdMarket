@@ -11,8 +11,7 @@ import java.util.Optional;
 
 public interface UserService {
 
-    UserEntity createUser(UserEntity user);
-    UserEntity createAdmin(UserEntity user);
+    UserEntity create(UserEntity user);
     Optional<UserEntity> getById(Long userId);
     Optional<UserEntity> getByUsername(String username);
     Optional<UserEntity> getByEmail(String email);
