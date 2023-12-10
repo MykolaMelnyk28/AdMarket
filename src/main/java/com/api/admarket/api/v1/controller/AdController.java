@@ -58,6 +58,7 @@ public class AdController {
     }
 
     @PutMapping("/{adId}")
+    @PreAuthorize("@simpleUserService.isAdSeller(#authentication.name, #adId)")
     public ResponseEntity<AdDTO> updateById(
             @PathVariable Long adId,
             @RequestBody @Validated(OnUpdate.class) AdDTO request
@@ -69,6 +70,7 @@ public class AdController {
     }
 
     @DeleteMapping("/{adId}")
+    @PreAuthorize("@simpleUserService.isAdSeller(#authentication.name, #adId)")
     public HttpStatus deleteById(
             @PathVariable Long adId
     ) {

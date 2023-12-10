@@ -2,6 +2,7 @@ package com.api.admarket.api.v1.controller;
 
 import com.api.admarket.api.v1.exeption.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -42,12 +43,22 @@ public class ControllerAdvice {
         return new ExceptionBody(e.getMessage());
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
+    @ExceptionHandler({
+            AccessDeniedException.class,
+            org.springframework.security.access.AccessDeniedException.class
+    })
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ExceptionBody handleAccessDenied(
-            final AccessDeniedException e
+            Exception e,
+            AccessDeniedException e1,
+            org.springframework.security.access.AccessDeniedException e2
     ) {
-        return new ExceptionBody("Access denied.");
+        if (e instanceof AccessDeniedException) {
+            return new ExceptionBody("Access denied.");
+        } else if (e instanceof org.springframework.security.access.AccessDeniedException) {
+            return new ExceptionBody(e.getMessage());
+        }
+        return new ExceptionBody("Access denied");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -84,6 +95,11 @@ public class ControllerAdvice {
         return new ExceptionBody("Category is not a leaf");
     }
 
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionBody handleAuthentication(final AuthenticationException e) {
+        return new ExceptionBody("Authentication failed.");
+    }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +45,7 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<UserDTO>> getAll() {
         Page<UserEntity> pageEntity = userService.getAll(PageRequest.ofSize(10));
         Page<UserDTO> page = pageEntity.map(userMapper::toDto);
@@ -51,6 +53,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @simpleUserService.isUserEqual(authentication, #id)")
     public ResponseEntity<UserDTO> updateById(
             @PathVariable Long id,
             @RequestBody @Validated(OnUpdate.class) UserDTO request
@@ -62,6 +65,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @simpleUserService.isUserEqual(authentication, #id)")
     public HttpStatus deleteById(
             @PathVariable Long id
     ) {
@@ -79,6 +83,7 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/ads")
+    @PreAuthorize("@simpleUserService.isUserEqual(authentication, #userId)")
     public ResponseEntity<AdDTO> create(
             @PathVariable Long userId,
             @RequestBody @Validated(OnCreate.class) AdDTO dto
@@ -90,6 +95,7 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/saved/ads/{adId}")
+    @PreAuthorize("@simpleUserService.isUserEqual(authentication, #userId)")
     public ResponseEntity<AdDTO> addSaveAdById(
             @PathVariable Long userId,
             @PathVariable Long adId
@@ -100,6 +106,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/saved/ads")
+    @PreAuthorize("@simpleUserService.isUserEqual(authentication, #userId)")
     public ResponseEntity<Page<AdDTO>> getAllAdFromSavedList(
             @PathVariable Long userId
     ) {
@@ -108,6 +115,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}/saved/ads/{adId}")
+    @PreAuthorize("@simpleUserService.isUserEqual(authentication, #userId)")
     public HttpStatus deleteAdFromSavedList(
             @PathVariable Long userId,
             @PathVariable Long adId
