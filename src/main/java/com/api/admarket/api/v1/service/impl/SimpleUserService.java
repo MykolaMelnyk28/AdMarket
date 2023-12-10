@@ -11,11 +11,14 @@ import com.api.admarket.api.v1.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
+import java.security.Principal;
 import java.util.Optional;
 import java.util.Set;
 
@@ -127,6 +130,15 @@ public class SimpleUserService implements UserService {
         UserEntity user = getByUsername(username).orElseThrow(() ->
                 new ResourceNotFoundException("User not found"));
         return userRepository.isAdSeller(user.getId(), adId);
+    }
+
+    @Override
+    public boolean isUserEqual(Authentication authentication, Long userId) {
+        if (authentication == null || authentication.getName() == null) {
+            return false;
+        }
+        UserEntity user = getByIdOrThrow(userId);
+        return user.getUsername().equals(authentication.getName());
     }
 
     @Override
