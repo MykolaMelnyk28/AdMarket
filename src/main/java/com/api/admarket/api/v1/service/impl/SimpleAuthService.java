@@ -2,8 +2,9 @@ package com.api.admarket.api.v1.service.impl;
 
 import com.api.admarket.api.v1.dto.auth.JwtRequest;
 import com.api.admarket.api.v1.dto.auth.JwtResponse;
-import com.api.admarket.api.v1.dto.user.UserDTO;
+import com.api.admarket.api.v1.entity.user.AccountStatus;
 import com.api.admarket.api.v1.entity.user.UserEntity;
+import com.api.admarket.api.v1.exeption.UserAccountStateException;
 import com.api.admarket.api.v1.service.AuthService;
 import com.api.admarket.api.v1.service.UserService;
 import com.api.admarket.config.security.JwtEntity;
@@ -12,9 +13,9 @@ import com.api.admarket.config.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,33 +24,30 @@ public class SimpleAuthService implements AuthService {
 
     private final UserService userService;
     private final JwtService jwtService;
-    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authManager;
 
     @Override
-    public JwtResponse register(UserEntity user) {
-        UserEntity created = userService.create(user);
+    public JwtResponse authenticate(JwtRequest jwtRequest) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated()) {
+            throw new IllegalStateException("Authentication is already done.");
+        }
 
-        JwtResponse response = createResponse(created);
-
-        return response;
-    }
-
-    @Override
-    public JwtResponse login(JwtRequest jwtRequest) {
         UserEntity user = userService.getByUsername(jwtRequest.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        jwtRequest.getUsername(),
-                        jwtRequest.getPassword()
-                )
+        if(user.getAccountStatus() == AccountStatus.BLOCKED) {
+            throw new UserAccountStateException("Account is blocked.");
+        }
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                jwtRequest.getUsername(),
+                jwtRequest.getPassword()
         );
+        System.out.println(authentication);
+        authManager.authenticate(authentication);
 
-        JwtResponse response = createResponse(user);
-
-        return response;
+        return createResponse(user);
     }
 
     private JwtResponse createResponse(UserEntity user) {
@@ -69,8 +67,7 @@ public class SimpleAuthService implements AuthService {
 
     @Override
     public JwtResponse refresh(String refreshToken) {
-        
-        return null;
+        return jwtService.refreshUserTokens(refreshToken);
     }
 
 }

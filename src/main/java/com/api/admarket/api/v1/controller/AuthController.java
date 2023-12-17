@@ -28,28 +28,29 @@ import java.util.Set;
 @Validated
 public class AuthController {
 
+    private final UserService userService;
     private final AuthService authService;
     private final UserMapper userMapper;
 
     @PostMapping("/register/admin")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<JwtResponse> registerAdmin(
+    public ResponseEntity<UserDTO> registerAdmin(
             @RequestBody @Validated(OnCreate.class) UserDTO request
     ) {
         UserEntity entity = userMapper.toEntity(request);
         entity.setRoles(Set.of(Role.ROLE_ADMIN));
-        JwtResponse response = authService.register(entity);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        entity = userService.create(entity);
+        return new ResponseEntity<>(userMapper.toDto(entity), HttpStatus.CREATED);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<JwtResponse> registerUser(
+    public ResponseEntity<UserDTO> registerUser(
             @RequestBody @Validated(OnCreate.class) UserDTO request
     ) {
         UserEntity entity = userMapper.toEntity(request);
         entity.setRoles(Set.of(Role.ROLE_USER));
-        JwtResponse response = authService.register(entity);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        entity = userService.create(entity);
+        return new ResponseEntity<>(userMapper.toDto(entity), HttpStatus.CREATED);
     }
 
 
@@ -57,7 +58,7 @@ public class AuthController {
     public ResponseEntity<JwtResponse> login(
             @RequestBody JwtRequest request
     ) {
-        JwtResponse response = authService.login(request);
+        JwtResponse response = authService.authenticate(request);
         return ResponseEntity.ok(response);
     }
 
