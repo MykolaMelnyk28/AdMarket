@@ -13,12 +13,13 @@
     <groupId>com.api</groupId>
     <artifactId>admarket</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <name>admarket</name>
     <description>admarket</description>
 
     <properties>
-        <java.version>20</java.version>
+        <java.version>17</java.version>
         <spring-boot.version>3.1.5</spring-boot.version>
         <flyway.version>9.22.3</flyway.version>
         <mysql.version>8.2.0</mysql.version>
@@ -122,16 +123,11 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot.version}</version>
                 <configuration>
-                    <image>
-                        <builder>paketobuildpacks/builder-jammy-base:latest</builder>
-                    </image>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
                         </exclude>
                     </excludes>
                 </configuration>
@@ -140,11 +136,6 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>${flyway.version}</version>
-                <configuration>
-                    <url>jdbc:mysql://localhost:3306/admarket_db</url>
-                    <user>root</user>
-                    <password>root</password>
-                </configuration>
             </plugin>
         </plugins>
     </build>
