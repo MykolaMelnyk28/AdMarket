@@ -32,4 +32,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
 .env
+minio-data
+src/main/resources/db/data
