@@ -6,6 +6,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -18,6 +19,14 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ControllerAdvice {
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public ExceptionBody handleHttpRequestMethodNotSupported(
+            HttpRequestMethodNotSupportedException e
+    ) {
+        return new ExceptionBody(e.getMessage());
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -99,6 +108,13 @@ public class ControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionBody handleAuthentication(final AuthenticationException e) {
         return new ExceptionBody("Authentication failed.");
+    }
+
+    @ExceptionHandler(UserAccountStateException.class)
+    public ExceptionBody handleUserAccountStateException(
+            UserAccountStateException e
+    ) {
+        return new ExceptionBody(e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
