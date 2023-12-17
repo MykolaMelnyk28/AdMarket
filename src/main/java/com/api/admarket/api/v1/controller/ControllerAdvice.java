@@ -1,6 +1,7 @@
 package com.api.admarket.api.v1.controller;
 
 import com.api.admarket.api.v1.exeption.*;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
@@ -115,6 +116,14 @@ public class ControllerAdvice {
             UserAccountStateException e
     ) {
         return new ExceptionBody(e.getMessage());
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ExceptionBody handleExpiredJwtException(
+            ExpiredJwtException e
+    ) {
+        return new ExceptionBody("JWT expired");
     }
 
     @ExceptionHandler(Exception.class)

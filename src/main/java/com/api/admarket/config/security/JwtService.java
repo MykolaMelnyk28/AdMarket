@@ -1,5 +1,7 @@
 package com.api.admarket.config.security;
 
+import com.api.admarket.api.v1.dto.auth.JwtResponse;
+import com.api.admarket.api.v1.exeption.AccessDeniedException;
 import com.api.admarket.config.props.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -8,6 +10,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 public class JwtService {
 
     private final JwtProperties jwtProps;
+    private final UserDetailsService userDetailsService;
     private SecretKey key;
 
     @PostConstruct
@@ -63,6 +67,22 @@ public class JwtService {
                 .expiration(validity)
                 .signWith(key)
                 .compact();
+    }
+
+    public JwtResponse refreshUserTokens(String refreshToken) {
+        if(isTokenExpired(refreshToken)) {
+            throw new AccessDeniedException("Refresh token is expired");
+        }
+
+        final String username = extractUsername(refreshToken);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        JwtResponse response = new JwtResponse();
+        response.setUsername(extractUsername(refreshToken));
+        response.setAccessToken(generateAccessToken(userDetails));
+        response.setAccessToken(generateRefreshToken(userDetails));
+
+        return response;
     }
 
     private Set<String> convertToStrRoles(Collection<? extends GrantedAuthority> authorities) {

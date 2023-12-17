@@ -24,7 +24,7 @@ public class JwtEntityFactory {
                 .isAccountNonExpired(true)
                 .isAccountNonLocked(true)
                 .isCredentialsNonExpired(true)
-                .isEnabled(user.getAccountStatus() != AccountStatus.NOACTIVATE)
+                .isEnabled(user.getAccountStatus() != AccountStatus.BLOCKED)
                 .build();
     }
 
