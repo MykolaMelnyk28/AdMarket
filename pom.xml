@@ -27,6 +27,7 @@
         <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
         <jakarta-validation.version>3.0.2</jakarta-validation.version>
         <io.jsonwebtoken.version>0.12.3</io.jsonwebtoken.version>
+        <minio.version>8.5.7</minio.version>
     </properties>
 
     <dependencies>
@@ -115,6 +116,13 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>0.12.3</version>
             <scope>runtime</scope>
+        </dependency>
+
+        <!--Minio-->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>${minio.version}</version>
         </dependency>
     </dependencies>
 
