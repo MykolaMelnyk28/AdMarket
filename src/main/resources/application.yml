@@ -5,7 +5,7 @@ server:
 spring:
   datasource:
     url: "${SPRING_DATASOURCE_URL}"
-    username: "${SPRING_DATASOURCE_USERNAME}}"
+    username: "${SPRING_DATASOURCE_USERNAME}"
     password: "${SPRING_DATASOURCE_PASSWORD}"
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
@@ -20,3 +20,9 @@ security:
     secret: ${SECURITY_JWT_SECRET}
     access: ${SECURITY_JWT_ACCESS}
     refresh: ${SECURITY_JWT_REFRESH}
+
+minio:
+  bucket: ${MINIO_BUCKET}
+  url: ${MINIO_URL}
+  access-key: ${MINIO_ACCESS_KEY}
+  secret-key: ${MINIO_SECRET_KEY}

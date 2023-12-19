@@ -1,8 +1,10 @@
 package com.api.admarket.config;
 
 import com.api.admarket.api.v1.repository.UserRepository;
+import com.api.admarket.config.props.MinioProperties;
 import com.api.admarket.config.security.JwtAuthenticationFilter;
 import com.api.admarket.config.security.SimpleUserDetailsService;
+import io.minio.MinioClient;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -86,5 +88,13 @@ public class ApplicationConfig {
         http.anonymous(AbstractHttpConfigurer::disable);
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    public MinioClient minioClient(MinioProperties minioProps) {
+        return MinioClient.builder()
+                .endpoint(minioProps.getUrl())
+                .credentials(minioProps.getAccessKey(), minioProps.getSecretKey())
+                .build();
     }
 }
