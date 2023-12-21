@@ -10,33 +10,37 @@ import com.api.admarket.api.v1.exeption.ResourceNotFoundException;
 import com.api.admarket.api.v1.repository.AdRepository;
 import com.api.admarket.api.v1.service.AdService;
 import com.api.admarket.api.v1.service.CategoryService;
+import com.api.admarket.api.v1.service.ImageService;
 import com.api.admarket.api.v1.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class SimpleAdService implements AdService {
     private final AdRepository adRepository;
     private final CategoryService categoryService;
     private final UserService userService;
-    //private final ImageService imageService;
+    private final ImageService imageService;
 
-    public SimpleAdService(
-            AdRepository adRepository,
-            CategoryService categoryService,
-            UserService userService
-    ) {
-        this.adRepository = adRepository;
-        this.categoryService = categoryService;
-        this.userService = userService;
-        //this.imageService = imageService;
-    }
+//    public SimpleAdService(
+//            AdRepository adRepository,
+//            CategoryService categoryService,
+//            UserService userService,
+//    ) {
+//        this.adRepository = adRepository;
+//        this.categoryService = categoryService;
+//        this.userService = userService;
+//        //this.imageService = imageService;
+//    }
 
     @Override
     public AdEntity create(AdEntity ad, Long userId) {
@@ -146,17 +150,34 @@ public class SimpleAdService implements AdService {
     }
 
     @Override
-    public String addImage(Long userId, Image image) {
-//        String url = imageService.upload(image);
-//        adRepository.addImage(userId, url);
-        //return url;
-        return "";
+    public String addImage(Long adId, Image image) {
+        AdEntity ad = getByIdOrThrow(adId);
+        String filename = createFilename(adId, image.getFile().getOriginalFilename());
+        ad.getImageUrls().add(filename);
+        adRepository.save(ad);
+        imageService.upload(filename, image);
+        return imageService.getUrl(filename, 1);
     }
 
     @Override
-    public void deleteImage(Long userId, String url) {
-//        imageService.unload(url);
-//        adRepository.deleteImage(userId, url);
+    public List<String> getImages(Long adId) {
+        String directory = "ads/" + adId + "/images";
+        return imageService.getUrls(directory, 1);
+    }
+
+    @Override
+    public void deleteImage(Long adId, String filename) {
+        String filenameFull = createFilename(adId, filename);
+        imageService.delete(filenameFull);
+        adRepository.deleteImage(adId, filenameFull);
+    }
+
+    private String createFilename(Long adId, String originalName) {
+        StringBuilder builder = new StringBuilder().append("ads/")
+                .append(adId)
+                .append("/images/")
+                .append(originalName);
+        return builder.toString();
     }
 
     @Override

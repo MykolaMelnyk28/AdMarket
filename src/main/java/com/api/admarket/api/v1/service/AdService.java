@@ -6,6 +6,7 @@ import com.api.admarket.api.v1.entity.image.Image;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AdService {
@@ -24,7 +25,8 @@ public interface AdService {
     void deleteById(Long adId);
 
     String addImage(Long adId, Image image);
-    void deleteImage(Long adId, String url);
+    List<String> getImages(Long adId);
+    void deleteImage(Long adId, String filename);
 
     void incrementViews(Long adId);
 }
