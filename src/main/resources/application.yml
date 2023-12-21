@@ -26,3 +26,4 @@ minio:
   url: ${MINIO_URL}
   access-key: ${MINIO_ACCESS_KEY}
   secret-key: ${MINIO_SECRET_KEY}
+  shared-expiry: ${MINIO_EXPIRY}
