@@ -28,6 +28,7 @@ public interface UserService {
     boolean isUserEqual(Authentication authentication, Long userId);
 
     String addImage(Long userId, Image image);
-    void deleteImage(Long userId, String url);
+    List<String> getImages(Long userId);
+    void deleteImage(Long userId, String filename);
 
 }

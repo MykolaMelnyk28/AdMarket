@@ -2,33 +2,32 @@ package com.api.admarket.api.v1.service.impl;
 
 import com.api.admarket.api.v1.entity.image.Image;
 import com.api.admarket.api.v1.entity.user.AccountStatus;
-import com.api.admarket.api.v1.entity.user.Role;
 import com.api.admarket.api.v1.entity.user.UserEntity;
 import com.api.admarket.api.v1.entity.user.UserInfo;
 import com.api.admarket.api.v1.exeption.ResourceNotFoundException;
 import com.api.admarket.api.v1.repository.UserRepository;
+import com.api.admarket.api.v1.service.ImageService;
 import com.api.admarket.api.v1.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
-import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class SimpleUserService implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    //private final ImageService imageService;
+    private final ImageService imageService;
 
 
     @Override
@@ -148,16 +147,33 @@ public class SimpleUserService implements UserService {
 
     @Override
     public String addImage(Long userId, Image image) {
-//        String url = imageService.upload(image);
-//        userRepository.addImage(userId, url);
-//        return url;
-        return "";
+        UserEntity user = getByIdOrThrow(userId);
+        String filename = createFilename(userId, image.getFile().getOriginalFilename());
+        user.getImageUrls().add(filename);
+        userRepository.save(user);
+        imageService.upload(filename, image);
+        return imageService.getUrl(filename, 1);
     }
 
     @Override
-    public void deleteImage(Long userId, String url) {
-//        imageService.unload(url);
-//        userRepository.deleteImage(userId, url);
+    public List<String> getImages(Long userId) {
+        String directory = "users/" + userId + "/images";
+        return imageService.getUrls(directory, 1);
+    }
+
+    @Override
+    public void deleteImage(Long userId, String filename) {
+        String filenameFull = createFilename(userId, filename);
+        imageService.delete(filenameFull);
+        userRepository.deleteImage(userId, filenameFull);
+    }
+
+    private String createFilename(Long adId, String originalName) {
+        StringBuilder builder = new StringBuilder().append("users/")
+                .append(adId)
+                .append("/images/")
+                .append(originalName);
+        return builder.toString();
     }
 
     private UserEntity getByIdOrThrow(Long id)
