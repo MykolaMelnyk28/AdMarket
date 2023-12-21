@@ -60,6 +60,7 @@ public class ApplicationConfig {
             HttpSecurity http,
             JwtAuthenticationFilter jwtAuthFilter
     ) throws Exception {
+        //http.cors(AbstractHttpConfigurer::disable);
         http.csrf(AbstractHttpConfigurer::disable);
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(request -> {
