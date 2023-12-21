@@ -1,6 +1,3 @@
-#CREATE DATABASE IF NOT EXISTS admarket_db;
-#USE admarket_db;
-
 CREATE TABLE IF NOT EXISTS user_info
 (
     id              BIGINT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -58,38 +55,6 @@ CREATE TABLE IF NOT EXISTS user_reviews
     CHECK (rating >= 1 AND rating <= 5),
     FOREIGN KEY (reviewer_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (seller_id) REFERENCES users (id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS chats
-(
-    id           BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS messages
-(
-    id           BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    chat_id      BIGINT NOT NULL,
-    sender_id    BIGINT NOT NULL,
-    receiver_id  BIGINT NOT NULL,
-    text         TEXT   NOT NULL,
-    is_read      BOOLEAN   DEFAULT FALSE,
-    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CHECK (sender_id <> receiver_id),
-    FOREIGN KEY (chat_id) REFERENCES chats (id) ON DELETE CASCADE ON UPDATE NO ACTION,
-    FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION,
-    FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION
-);
-
-CREATE TABLE IF NOT EXISTS chats_users
-(
-    chat_id BIGINT,
-    user_id BIGINT,
-    PRIMARY KEY (chat_id, user_id),
-    FOREIGN KEY (chat_id) REFERENCES chats (id) ON DELETE CASCADE ON UPDATE NO ACTION,
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS categories
