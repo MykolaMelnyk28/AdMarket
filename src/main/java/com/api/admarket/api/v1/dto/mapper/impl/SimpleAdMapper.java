@@ -6,14 +6,18 @@ import com.api.admarket.api.v1.dto.mapper.CategoryMapper;
 import com.api.admarket.api.v1.dto.user.UserDTO;
 import com.api.admarket.api.v1.entity.ad.*;
 import com.api.admarket.api.v1.entity.user.UserEntity;
+import com.api.admarket.api.v1.service.AdService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @AllArgsConstructor
 public class SimpleAdMapper implements AdMapper {
 
     private final CategoryMapper categoryMapper;
+    private final AdService adService;
 
     @Override
     public AdDTO toDto(AdEntity entity) {
@@ -34,6 +38,8 @@ public class SimpleAdMapper implements AdMapper {
         dto.setItemCondition(getItemConditionString(entity));
         dto.setViewsCount(entity.getViewsCount());
         dto.setDateCreated(entity.getDateCreated());
+
+        dto.setImages(getImages(entity.getId()));
 
         return dto;
     }
@@ -63,6 +69,10 @@ public class SimpleAdMapper implements AdMapper {
             return null;
         }
         return entity.getItemCondition().name().toLowerCase();
+    }
+
+    private List<String> getImages(Long adId) {
+        return adService.getImages(adId);
     }
 
     @Override

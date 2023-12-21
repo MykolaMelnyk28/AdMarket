@@ -6,14 +6,22 @@ import com.api.admarket.api.v1.entity.user.AccountStatus;
 import com.api.admarket.api.v1.entity.user.Role;
 import com.api.admarket.api.v1.entity.user.UserEntity;
 import com.api.admarket.api.v1.entity.user.UserInfo;
+import com.api.admarket.api.v1.service.ImageService;
+import com.api.admarket.api.v1.service.UserService;
+import com.api.admarket.api.v1.service.impl.MinioImageService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import javax.imageio.stream.ImageInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 @Component
+@RequiredArgsConstructor
 public class SimpleUserMapper implements UserMapper {
+
+    private final UserService userService;
 
     @Override
     public UserDTO toDto(UserEntity entity) {
@@ -34,7 +42,7 @@ public class SimpleUserMapper implements UserMapper {
         dto.setRole(getStringRole(entity.getRoles()));
         copyUserInfo(dto, entity.getUserInfo());
 
-        dto.setImages(getImagesOrEmptyList(entity.getImageUrls()));
+        dto.setImages(getImages(entity.getId()));
 
         return dto;
     }
@@ -44,11 +52,8 @@ public class SimpleUserMapper implements UserMapper {
         return role.name().substring(5).toLowerCase();
     }
 
-    private List<String> getImagesOrEmptyList(List<String> images) {
-        if (images == null || images.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return images;
+    private List<String> getImages(Long id) {
+        return userService.getImages(id);
     }
 
     private void copyUserInfo(UserDTO destination, UserInfo source) {
