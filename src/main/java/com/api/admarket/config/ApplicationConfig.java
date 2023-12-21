@@ -5,6 +5,11 @@ import com.api.admarket.config.props.MinioProperties;
 import com.api.admarket.config.security.JwtAuthenticationFilter;
 import com.api.admarket.config.security.SimpleUserDetailsService;
 import io.minio.MinioClient;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -54,6 +59,25 @@ public class ApplicationConfig {
         return provider;
     }
 
+    @Bean
+    public OpenAPI openAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("AdMarket API")
+                        .description("")
+                        .version("1.0")
+                )
+                .addSecurityItem(new SecurityRequirement()
+                        .addList("bearerAuth")
+                )
+                .components(new Components()
+                        .addSecuritySchemes("bearerAuth", new SecurityScheme()
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")
+                        )
+                );
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(

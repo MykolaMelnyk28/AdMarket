@@ -12,6 +12,7 @@ import com.api.admarket.api.v1.entity.ad.Category;
 import com.api.admarket.api.v1.dto.ad.FilterRequest;
 import com.api.admarket.api.v1.service.AdService;
 import com.api.admarket.api.v1.service.CategoryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,7 @@ import java.util.Optional;
 @RequestMapping("/categories")
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "Category Controller", description = "Category API")
 public class CategoryController {
 
     private final CategoryService categoryService;

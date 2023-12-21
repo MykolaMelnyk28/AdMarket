@@ -9,6 +9,7 @@ import com.api.admarket.api.v1.entity.user.Role;
 import com.api.admarket.api.v1.entity.user.UserEntity;
 import com.api.admarket.api.v1.service.AuthService;
 import com.api.admarket.api.v1.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import java.util.Set;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "Auth Controller", description = "Auth API")
 public class AuthController {
 
     private final UserService userService;

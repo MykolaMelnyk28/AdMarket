@@ -11,6 +11,7 @@ import com.api.admarket.api.v1.entity.image.Image;
 import com.api.admarket.api.v1.entity.user.UserEntity;
 import com.api.admarket.api.v1.service.AdService;
 import com.api.admarket.api.v1.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +29,7 @@ import java.util.Optional;
 @RequestMapping("/users")
 @AllArgsConstructor
 @Validated
+@Tag(name = "User Controller", description = "User API")
 public class UserController {
 
     private final UserService userService;

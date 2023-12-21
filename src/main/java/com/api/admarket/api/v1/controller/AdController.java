@@ -9,6 +9,7 @@ import com.api.admarket.api.v1.entity.ad.AdEntity;
 import com.api.admarket.api.v1.entity.ad.FilterProperties;
 import com.api.admarket.api.v1.entity.image.Image;
 import com.api.admarket.api.v1.service.AdService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import java.util.Optional;
 @RequestMapping("/ads")
 @AllArgsConstructor
 @Validated
+@Tag(name = "Ad Controller", description = "Ad API")
 public class AdController {
 
     private final AdService adService;
