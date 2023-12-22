@@ -1,7 +1,7 @@
 # AdMarket API 1.0
 
 ## Auth
-
+```
 POST /auth/register
 Request {
   "username": "",
@@ -42,7 +42,9 @@ Response {
     "http://.../image.jpg"
   ]
 }
+```
 
+```
 POST /auth/register/admin
 Request {
   "username": "",
@@ -83,7 +85,9 @@ Response {
     "http://.../image.jpg"
   ]
 }
+```
 
+```
 POST /auth/login
 Request {
 	"username": "",
@@ -95,10 +99,11 @@ Response {
   "accessToken": "",
   "refreshToken": ""
 }
-
+```
 
 ## User
 
+```
 GET /users
 Response [
 	{
@@ -151,7 +156,9 @@ Response {
     "http://.../image.jpg"
   ]
 }
+```
 
+```
 PUT /users/{id}
 Request {
 	"firstName": "otherFirst",
@@ -180,10 +187,14 @@ Response {
     "http://.../image.jpg"
   ]
 }
+```
 
+```
 DELETE /users/{id}
 Response "OK"
+```
 
+```
 GET /users/{userId}/saved/ads
 Response [
 	{
@@ -205,7 +216,9 @@ Response [
 	},
 	...
 ]
+```
 
+```
 POST /users/{userId}/saved/ads/{adId}
 Response {
 	"id": 1,
@@ -224,10 +237,14 @@ Response {
 	  "http://.../image.jpg"
 	]
 }
+```
 
+```
 DELETE /users/{userId}/saved/ads/{adId}
 Response "OK"
+```
 
+```
 GET /users/{userId}/ads
 Response [
 	{
@@ -249,7 +266,9 @@ Response [
 	},
 	...
 ]
+```
 
+```
 POST /users/{userId}/ads
 Request {
 	"title": "",
@@ -281,25 +300,32 @@ Response {
 	  "http://.../image.jpg"
 	]
 }
+```
 
+```
 GET /users/{userId}/images
 Response [
 	"http://.../image.jpg",
 	"http://.../image.jpg"
 ]
+```
 
+```
 POST /users/{userId}/images
 Request {
 	"file": ""
 }
 Response "http://.../image.jpg"
+```
 
+```
 DELETE /users/{userId}/images/{filename}
 Response "http://.../image.jpg"
-
+```
 
 ## Ad
 
+```
 GET /ads
 Response [
 	{
@@ -321,7 +347,9 @@ Response [
 	},
 	...
 ]
+```
 
+```
 GET /ads/{adId}
 Response {
 	"id": 1,
@@ -340,7 +368,9 @@ Response {
 	  "http://.../image.jpg"
 	]
 }
+```
 
+```
 PUT /ads/{adId}
 Request {
 	"title": "otherTitle"
@@ -362,28 +392,35 @@ Response {
 	  "http://.../image.jpg"
 	]
 }
+```
 
+```
 DELETE /ads/{adId}
 Response "OK"
+```
 
+```
 GET /ads/{adId}/images
 Response [
 	"http://.../image.jpg",
 	...
 ]
-
+```
+```
 POST /ads/{adId}/images
 Request {
 	"file": ""
 }
 Response "http://.../image.jpg"
-
+```
+```
 DELETE /ads/{adId}/images/{filename}
 Response "OK"
-
+```
 
 ## Category
 
+```
 GET /categories/{categoryName}
 Response {
   "name": "",
@@ -407,8 +444,8 @@ Response {
 	...
   ]
 }
-
-
+```
+```
 POST /categories
 Request {
 	"name": "",
@@ -430,7 +467,8 @@ Response {
   "parent": "all",
   "children": []
 }
-
+```
+```
 POST /categories
 Request {
 	"name": "category1_1",
@@ -441,9 +479,9 @@ Response {
   "parent": "category1",
   "children": []
 }
+```
 
-
-
+```
 PUT /categories/{categoryName}
 Request {
 	"name": "",
@@ -454,8 +492,8 @@ Response {
   "parent": "",
   "children": []
 }
-
+```
+```
 DELETE /categories/{categoryName}
 Response "OK"
-
-
+```
