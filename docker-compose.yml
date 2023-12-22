@@ -1,0 +1,47 @@
+version: "3"
+
+networks:
+  app-network:
+    driver: bridge
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    hostname: mysql
+    networks:
+      - app-network
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./src/main/resources/db/init:/docker-entrypoint-initdb.d
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    networks:
+      - app-network
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
+    command: server ~/minio --console-address :9090
+    ports:
+      - '9090:9090'
+      - '9000:9000'
+    volumes:
+      - ./minio-data:/minio
+  admarket:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: "admarket"
+    networks:
+      - app-network
+    depends_on:
+      - minio
+      - mysql
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env

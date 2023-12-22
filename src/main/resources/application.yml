@@ -1,0 +1,29 @@
+server:
+  servlet:
+    context-path: "${API_CONTEXT_PATH}"
+
+spring:
+  datasource:
+    url: "${SPRING_DATASOURCE_URL}"
+    username: "${SPRING_DATASOURCE_USERNAME}"
+    password: "${SPRING_DATASOURCE_PASSWORD}"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDLAUTO}
+    show-sql: true
+  flyway:
+    enabled: ${SPRING_FLYWAY_ENABLED}
+    locations: ${SPRING_FLYWAY_LOCATIONS}
+security:
+  jwt:
+    secret: ${SECURITY_JWT_SECRET}
+    access: ${SECURITY_JWT_ACCESS}
+    refresh: ${SECURITY_JWT_REFRESH}
+
+minio:
+  bucket: ${MINIO_BUCKET}
+  url: ${MINIO_URL}
+  access-key: ${MINIO_ACCESS_KEY}
+  secret-key: ${MINIO_SECRET_KEY}
+  shared-expiry: ${MINIO_EXPIRY}
