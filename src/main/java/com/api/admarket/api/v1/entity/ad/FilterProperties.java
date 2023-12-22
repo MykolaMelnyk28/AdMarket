@@ -11,5 +11,6 @@ public class FilterProperties {
     private int limit;
     private String title;
     private String category;
+    private Sort sort;
 
 }

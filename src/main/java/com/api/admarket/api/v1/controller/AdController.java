@@ -36,16 +36,14 @@ public class AdController {
     @GetMapping
     public ResponseEntity<Page<AdDTO>> getAll(
             @RequestParam(required = false, defaultValue = "all") String category,
-            @ModelAttribute FilterRequest request
+            @RequestParam(required = false, defaultValue = "") String title,
+            @RequestParam(name = "page",required = false, defaultValue = "0") int pageNumber,
+            @RequestParam(required = false, defaultValue = "10") int limit,
+            @RequestParam(required = false, defaultValue = "title asc") String sort
     ) {
-        Page<AdEntity> page = getPageAds(category, request);
+        FilterRequest request = new FilterRequest(pageNumber, limit, category, title, sort);
+        Page<AdEntity> page = adService.getAllByFilter(filtersMapper.toEntity(request));
         return ResponseEntity.ok(page.map(adMapper::toDto));
-    }
-
-    private Page<AdEntity> getPageAds(String categoryName, FilterRequest filters) {
-        FilterProperties filterPsEntity = filtersMapper.toEntity(filters);
-        filterPsEntity.setCategory(categoryName);
-        return adService.getAllByFilter(filterPsEntity);
     }
 
     @GetMapping("/{adId}")

@@ -25,6 +25,21 @@ public interface AdRepository extends JpaRepository<AdEntity, Long> {
         SELECT a.*, ua.user_id FROM ads a
         JOIN users_ads ua ON ua.ad_id = a.id
         JOIN CategoryHierarchy ch ON a.category_id = ch.id
+        WHERE a.title LIKE CONCAT('%', :#{#filterPs.title}, '%')
+        """, countQuery = """
+        WITH RECURSIVE CategoryHierarchy AS (
+            SELECT id, name, parent_id
+            FROM categories
+            WHERE name = :#{#filterPs.category}
+            UNION ALL
+            SELECT c.id, c.name, c.parent_id
+            FROM categories c
+            JOIN CategoryHierarchy ch ON c.parent_id = ch.id
+        )
+        SELECT COUNT(DISTINCT a.id) FROM ads a
+        JOIN users_ads ua ON ua.ad_id = a.id
+        JOIN CategoryHierarchy ch ON a.category_id = ch.id
+        WHERE a.title LIKE CONCAT('%', :#{#filterPs.title}, '%')
         """, nativeQuery = true)
     Page<AdEntity> findAdsByFilters(FilterProperties filterPs, Pageable pageable);
 

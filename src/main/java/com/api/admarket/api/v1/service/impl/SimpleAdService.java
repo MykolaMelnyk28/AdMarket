@@ -31,17 +31,6 @@ public class SimpleAdService implements AdService {
     private final UserService userService;
     private final ImageService imageService;
 
-//    public SimpleAdService(
-//            AdRepository adRepository,
-//            CategoryService categoryService,
-//            UserService userService,
-//    ) {
-//        this.adRepository = adRepository;
-//        this.categoryService = categoryService;
-//        this.userService = userService;
-//        //this.imageService = imageService;
-//    }
-
     @Override
     public AdEntity create(AdEntity ad, Long userId) {
         if (ad.getId() != null && getById(ad.getId()).isPresent()) {
@@ -98,10 +87,9 @@ public class SimpleAdService implements AdService {
 
     @Override
     public Page<AdEntity> getAllByFilter(FilterProperties filterPs) {
-        Pageable pageable = PageRequest.of(filterPs.getPage(), filterPs.getLimit());
+        Pageable pageable = PageRequest.of(filterPs.getPage(), filterPs.getLimit(), filterPs.getSort());
         return adRepository.findAdsByFilters(filterPs, pageable);
     }
-
 
     @Override
     public Page<AdEntity> getAllByUserId(Long sellerId, Pageable pageable) {
