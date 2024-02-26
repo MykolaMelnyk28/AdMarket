@@ -1,6 +1,23 @@
 # AdMarket API 1.0
 
-## Auth
+The a backend API for the AdMarket site.
+
+### Project stack:
+- Spring Boot Web
+- Spring Boot Data
+- Spring Security
+- MySQL
+- MinIO
+- Docker/Docker Compose
+
+### Run application
+```
+docker compose up
+```
+
+## Mapping scheme
+
+### Auth
 ```
 POST /auth/register
 Request {
@@ -101,7 +118,7 @@ Response {
 }
 ```
 
-## User
+### User
 
 ```
 GET /users
@@ -323,7 +340,7 @@ DELETE /users/{userId}/images/{filename}
 Response "http://.../image.jpg"
 ```
 
-## Ad
+### Ad
 
 ```
 GET /ads
@@ -418,7 +435,7 @@ DELETE /ads/{adId}/images/{filename}
 Response "OK"
 ```
 
-## Category
+### Category
 
 ```
 GET /categories/{categoryName}
